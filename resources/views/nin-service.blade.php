@@ -119,13 +119,7 @@
                                     <li class="nav-item" role="presentation">
                                         <a class="nav-link active" id="new-tab" data-bs-toggle="tab" href="#new-1"
                                             role="tab" aria-controls="new-1" aria-selected="true">
-                                            New Request
-                                        </a>
-                                    </li>
-                                    <li class="nav-item" role="presentation">
-                                        <a class="nav-link" id="history-tab" data-bs-toggle="tab" href="#history-1"
-                                            role="tab" aria-controls="history-1" aria-selected="false">
-                                            History
+                                            My Request
                                         </a>
                                     </li>
                                 </ul>
@@ -135,163 +129,174 @@
                                     <!-- New Request Tab Content -->
                                     <div class="tab-pane fade show active" id="new-1" role="tabpanel"
                                         aria-labelledby="new-tab">
-                                        <div class="card custom-card">
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <div class="card custom-card">
 
-                                            <div class="card-body text-center">
-                                                <center>
-                                                    <img class="img-fluid" src="{{ asset('assets/images/nimc.png') }}"
-                                                        width="30%">
-                                                </center>
-                                                <small class="font-italic"><i>Please note that this request will be
-                                                        processed within 2 working days. We appreciate your patience and
-                                                        will keep you updated on the status.</i></small>
+                                                    <div class="card-body text-center">
+                                                        <center>
+                                                            <img class="img-fluid"
+                                                                src="{{ asset('assets/images/nimc.png') }}" width="30%">
+                                                        </center>
+                                                        <small class="font-italic"><i>Please note that this request will be
+                                                                processed within 2 working days. We appreciate your patience
+                                                                and
+                                                                will keep you updated on the status.</i></small>
 
 
-                                                <form id="form" name="nin-request" method="POST"
-                                                    action="{{ route('request-nin-service') }}"
-                                                    enctype="multipart/form-data">
-                                                    @csrf
-                                                    <div class="row mb-2">
-                                                        <div class="row">
-                                                            <div class="col-md-12 mt-3 mb-3">
-                                                                <select name="service" id="service"
-                                                                    class="form-select text-center" required
-                                                                    aria-label="Default select example">
-                                                                    <option value="">-- Service Type --</option>
-                                                                    @foreach ($services as $service)
-                                                                        <option value="{{ $service->service_code }}">
-                                                                            {{ $service->name }} -
-                                                                            &#x20A6;{{ number_format($service->amount, 2) }}
-                                                                        </option>
-                                                                    @endforeach
-                                                                </select>
+                                                        <form id="form" name="nin-request" method="POST"
+                                                            action="{{ route('request-nin-service') }}"
+                                                            enctype="multipart/form-data">
+                                                            @csrf
+                                                            <div class="row mb-2">
+                                                                <div class="row">
+                                                                    <div class="col-md-12 mt-3 mb-3">
+                                                                        <select name="service" id="service"
+                                                                            class="form-select text-center" required
+                                                                            aria-label="Default select example">
+                                                                            <option value="">-- Service Type --
+                                                                            </option>
+                                                                            @foreach ($services as $service)
+                                                                                <option
+                                                                                    value="{{ $service->service_code }}">
+                                                                                    {{ $service->name }} -
+                                                                                    &#x20A6;{{ number_format($service->amount, 2) }}
+                                                                                </option>
+                                                                            @endforeach
+                                                                        </select>
+                                                                    </div>
+                                                                </div>
+
+                                                                <div class="row">
+                                                                    <div class="col-md-12">
+                                                                        <p class="mb-2 form-label" id="modify_lbl"></p>
+                                                                        <div id="input-container"></div>
+                                                                    </div>
+                                                                </div>
+
+                                                                <div class="row">
+                                                                    <div class="col-md-12">
+                                                                        <p class="mb-2 mt-2 form-label" id="modify_lbl2">
+                                                                        </p>
+                                                                        <div id="input-container2"></div>
+                                                                    </div>
+                                                                </div>
+
+                                                                <div id="photo"
+                                                                    class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mt-1 mb-2">
+                                                                    <label for="input-file" class="form-label">Photograph
+                                                                        Requirement</label>
+                                                                    <a type="button" data-bs-toggle="modal"
+                                                                        data-bs-target="#requirements">
+                                                                        <i class="las la-info-circle bg-light"
+                                                                            style="font-size:24px"></i>
+                                                                    </a>
+                                                                    <p><small class="text-danger">Note: For more
+                                                                            information click
+                                                                            on the information icon</small></p>
+                                                                    <input class="form-control mt-2" type="file"
+                                                                        name="documents" id="documents" />
+                                                                </div>
                                                             </div>
-                                                        </div>
-
-                                                        <div class="row">
-                                                            <div class="col-md-12">
-                                                                <p class="mb-2 form-label" id="modify_lbl"></p>
-                                                                <div id="input-container"></div>
-                                                            </div>
-                                                        </div>
-
-                                                        <div class="row">
-                                                            <div class="col-md-12">
-                                                                <p class="mb-2 mt-2 form-label" id="modify_lbl2"></p>
-                                                                <div id="input-container2"></div>
-                                                            </div>
-                                                        </div>
-
-                                                        <div id="photo"
-                                                            class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mt-1 mb-2">
-                                                            <label for="input-file" class="form-label">Photograph
-                                                                Requirement</label>
-                                                            <a type="button" data-bs-toggle="modal"
-                                                                data-bs-target="#requirements">
-                                                                <i class="las la-info-circle bg-light"
-                                                                    style="font-size:24px"></i>
-                                                            </a>
-                                                            <p><small class="text-danger">Note: For more information click
-                                                                    on the information icon</small></p>
-                                                            <input class="form-control mt-2" type="file"
-                                                                name="documents" id="documents" />
-                                                        </div>
+                                                            <button type="submit" id="nin-request"
+                                                                class="btn btn-primary">
+                                                                <i class="las la-share"></i> Submit Request
+                                                            </button>
+                                                        </form>
                                                     </div>
-                                                    <button type="submit" id="nin-request" class="btn btn-primary">
-                                                        <i class="las la-share"></i> Submit Request
-                                                    </button>
-                                                </form>
+                                                </div>
                                             </div>
-                                        </div>
-                                    </div>
+                                            <div class="col-md-8">
+                                                <div class="card custom-card">
 
-                                    <!-- History Tab Content -->
-                                    <div class="tab-pane fade" id="history-1" role="tabpanel"
-                                        aria-labelledby="history-tab">
-                                        <div class="card custom-card">
+                                                    <div class="card-body">
+                                                        <p>Check the status of your request from this section. You can track
+                                                            the
+                                                            progress and updates on your request</p>
+                                                        <p class="text-danger">For instant IPE Please use the check status
+                                                            button after few minute of submission.</p>
+                                                        @if (!$nin->isEmpty())
+                                                            @php
+                                                                $currentPage = $nin->currentPage();
+                                                                $perPage = $nin->perPage();
+                                                                $serialNumber = ($currentPage - 1) * $perPage + 1;
+                                                            @endphp
 
-                                            <div class="card-body">
-                                                <p>Check the status of your request from this section. You can track the
-                                                    progress and updates on your request</p>
+                                                            <div class="table-responsive">
+                                                                <table class="table text-nowrap"
+                                                                    style="background:#fafafc !important">
+                                                                    <thead>
+                                                                        <tr class="table-primary">
+                                                                            <th width="5%" scope="col">ID</th>
+                                                                            <th scope="col">Tracking/NIN ID</th>
+                                                                            <th scope="col" class="text-center">Status
+                                                                            </th>
+                                                                            <th class="text-center">Query</th>
+                                                                        </tr>
+                                                                    </thead>
+                                                                    <tbody>
+                                                                        @foreach ($nin as $data)
+                                                                            <tr>
+                                                                                <th scope="row">{{ $serialNumber++ }}
+                                                                                </th>
+                                                                                <td>{{ $data->trackingId }}
+                                                                                    @if ($data->service_type == 'IPE Instant' && $data->status == 'pending')
+                                                                                        &nbsp; <a
+                                                                                            href="{{ route('ipeStatus', [$data->trackingId, $data->tnx_id]) }}"
+                                                                                            class="btn btn-sm btn-primary rounded">
+                                                                                            <i class="bx bx-refresh"></i>
+                                                                                            Check
+                                                                                            Status
+                                                                                        </a>
+                                                                                    @endif
 
-                                                @if (!$nin->isEmpty())
-                                                    @php
-                                                        $currentPage = $nin->currentPage();
-                                                        $perPage = $nin->perPage();
-                                                        $serialNumber = ($currentPage - 1) * $perPage + 1;
-                                                    @endphp
+                                                                                </td>
+                                                                                <td class="text-center">
+                                                                                    @if ($data->status == 'resolved')
+                                                                                        <span
+                                                                                            class="badge bg-outline-success">{{ Str::upper($data->status) }}</span>
+                                                                                    @elseif($data->status == 'rejected')
+                                                                                        <span
+                                                                                            class="badge bg-outline-danger">{{ Str::upper($data->status) }}</span>
+                                                                                    @elseif($data->status == 'pending')
+                                                                                        <span
+                                                                                            class="badge bg-outline-warning">{{ Str::upper($data->status) }}</span>
+                                                                                    @else
+                                                                                        <span
+                                                                                            class="badge bg-outline-primary">{{ Str::upper($data->status) }}</span>
+                                                                                    @endif
+                                                                                </td>
+                                                                                <td class="text-center">
 
-                                                    <div class="table-responsive">
-                                                        <table class="table text-nowrap"
-                                                            style="background:#fafafc !important">
-                                                            <thead>
-                                                                <tr class="table-primary">
-                                                                    <th width="5%" scope="col">ID</th>
-                                                                    <th scope="col">Reference No.</th>
-                                                                    <th scope="col">Tracking/NIN ID</th>
-                                                                    <th scope="col">Service Type</th>
-                                                                    <th scope="col" class="text-center">Status</th>
-                                                                    <th class="text-center">Query</th>
-                                                                </tr>
-                                                            </thead>
-                                                            <tbody>
-                                                                @foreach ($nin as $data)
-                                                                    <tr>
-                                                                        <th scope="row">{{ $serialNumber++ }}</th>
-                                                                        <td>{{ Str::upper($data->refno) }}</td>
-                                                                        <td>{{ $data->trackingId }}</td>
-                                                                        <td>{{ $data->service_type }}
-                                                                            @if ($data->service_type == 'IPE Instant' && $data->status == 'pending')
-                                                                                &nbsp; <a
-                                                                                    href="{{ route('ipeStatus', $data->trackingId) }}"
-                                                                                    class="btn btn-sm btn-primary rounded">
-                                                                                    <i class="bx bx-refresh"></i> Check
-                                                                                    Status
-                                                                                </a>
-                                                                            @endif
-                                                                        </td>
-                                                                        <td class="text-center">
-                                                                            @if ($data->status == 'resolved')
-                                                                                <span
-                                                                                    class="badge bg-outline-success">{{ Str::upper($data->status) }}</span>
-                                                                            @elseif($data->status == 'rejected')
-                                                                                <span
-                                                                                    class="badge bg-outline-danger">{{ Str::upper($data->status) }}</span>
-                                                                            @elseif($data->status == 'pending')
-                                                                                <span
-                                                                                    class="badge bg-outline-warning">{{ Str::upper($data->status) }}</span>
-                                                                            @else
-                                                                                <span
-                                                                                    class="badge bg-outline-primary">{{ Str::upper($data->status) }}</span>
-                                                                            @endif
-                                                                        </td>
-                                                                        <td class="text-center">
-
-                                                                            <a type="button" data-bs-toggle="modal"
-                                                                                data-id="2"
-                                                                                data-reason="{{ $data->reason }}"
-                                                                                data-bs-target="#reason">
-                                                                                <i class="las la-info-circle bg-light"
-                                                                                    style="font-size:24px"></i>
-                                                                            </a>
-                                                                        </td>
-                                                                    </tr>
-                                                                @endforeach
-                                                            </tbody>
-                                                        </table>
-                                                        <!-- Pagination Links -->
-                                                        <div class="d-flex justify-content-center">
-                                                            {{ $nin->links('vendor.pagination.bootstrap-4') }}
-                                                        </div>
+                                                                                    <a type="button"
+                                                                                        data-bs-toggle="modal"
+                                                                                        data-id="2"
+                                                                                        data-reason="{{ $data->reason }}"
+                                                                                        data-bs-target="#reason">
+                                                                                        <i class="las la-info-circle bg-light"
+                                                                                            style="font-size:24px"></i>
+                                                                                    </a>
+                                                                                </td>
+                                                                            </tr>
+                                                                        @endforeach
+                                                                    </tbody>
+                                                                </table>
+                                                                <!-- Pagination Links -->
+                                                                <div class="d-flex justify-content-center">
+                                                                    {{ $nin->links('vendor.pagination.bootstrap-4') }}
+                                                                </div>
+                                                            </div>
+                                                        @else
+                                                            <center>
+                                                                <img width="65%"
+                                                                    src="{{ asset('assets/images/no-transaction.gif') }}"
+                                                                    alt="">
+                                                            </center>
+                                                            <p class="text-center fw-semibold fs-15">No Request Available!
+                                                            </p>
+                                                        @endif
                                                     </div>
-                                                @else
-                                                    <center>
-                                                        <img width="65%"
-                                                            src="{{ asset('assets/images/no-transaction.gif') }}"
-                                                            alt="">
-                                                    </center>
-                                                    <p class="text-center fw-semibold fs-15">No Request Available!</p>
-                                                @endif
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
