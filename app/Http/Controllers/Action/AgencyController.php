@@ -19,7 +19,9 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 
 
 class AgencyController extends Controller
@@ -31,11 +33,7 @@ class AgencyController extends Controller
 
     protected $loginUserId;
 
-    // // Constructor to initialize the property
-    // public function __construct()
-    // {
-    //     $this->loginUserId = Auth::id();
-    // }
+
     public function __construct(WalletService $walletService)
     {
         $this->loginUserId = Auth::id();
@@ -923,8 +921,6 @@ class AgencyController extends Controller
             return view('error');
         }
 
-
-
         $notifications = Notification::where('user_id', $this->loginUserId)
             ->where('status', 'unread')
             ->orderByDesc('id')
@@ -1038,6 +1034,8 @@ class AgencyController extends Controller
 
         $tracking_id = $request->tracking_id;
 
+        $successMessage = 'NIN Service Request was successfully';
+
         // Services Fee
         $ServiceFee = 0;
         $Service = Services::where('service_code', $request->service)->first();
@@ -1054,19 +1052,15 @@ class AgencyController extends Controller
         } else {
 
             if ($request->service == 170) {
+
                 $response = $this->pushForAutoIpe($tracking_id);
 
-                if (isset($response['status']) && $response['status'] === true && $response['message'] !== true) {
-                } elseif (isset($response['status']) && $response['status'] === false) {
+                Log::info('Clearance Response:', $response);
 
-                    if ($response['message'] == 'Invalid Authorization Header Format') {
-                        return redirect()->back()->with('error', 'Failed: You are not authorize to perform this action. ');
-                    }
-
-                    return redirect()->back()->with('error', $response['message'] ?? 'Request failed.');
+                if (isset($response['response_code']) && $response['response_code'] === "00") {
+                    $successMessage = $response['message'];
                 } else {
-                    // Fallback error
-                    return redirect()->back()->with('error', 'Unexpected response from the API.');
+                    return redirect()->back()->with('error', 'Error: Clearance request failed to submit');
                 }
             }
 
@@ -1123,8 +1117,6 @@ class AgencyController extends Controller
 
             $this->walletService->creditDeveloperWallet($payer_name, $payer_email, $payer_phone, $referenceno . "C2w", "ipe_dev_fee");
 
-            $successMessage = 'NIN Service Request was successfully';
-
             return redirect()->back()->with('success', $successMessage);
         }
     }
@@ -1133,15 +1125,17 @@ class AgencyController extends Controller
     {
         try {
 
-            $data = ['idNumber' => $trackingId, "consent" => true];
+            $data = [
+                'value' => $trackingId,
+            ];
 
-            $url = env('BASE_API_URL') . '/api/ipestatus/index.php';
-            $token = env('VERIFY_BEARER');
+            $url = env('ENDPOINT') . '/nin/ipe-status';
+            $token = env('ACCESS_TOKEN');
 
             $headers = [
                 'Accept: application/json, text/plain, */*',
                 'Content-Type: application/json',
-                "Authorization: Bearer $token",
+                "Authorization: $token",
             ];
 
             // Initialize cURL
@@ -1167,19 +1161,21 @@ class AgencyController extends Controller
 
             $response = json_decode($response, true);
 
-            if (isset($response['status']) && $response['status'] === true) {
+            if (isset($response['response_code']) && $response['response_code'] === "00") {
+                $successMessage = $response['message'];
 
                 NIN_REQUEST::where('trackingId', $trackingId)
-                    ->update(['reason' => $response['reply'] ?? '', 'status' => 'resolved']);
+                    ->update(['reason' => $response['response'] ?? '', 'status' => 'resolved']);
 
                 return redirect()->route('nin-services')
-                    ->with('success', 'IPE request is successful, check the query section');
-            } elseif (isset($response['status']) && $response['status'] === false) {
+                    ->with('success', 'IPE request is successful, check the query section => ' . $response["response"]);
+            } elseif (isset($response['status']) && $response['status'] === "false") {
+
                 return redirect()->route('nin-services')
-                    ->with('error',  $response['message'] . ' - kindly wait your request is still processing');
+                    ->with('error',  $response['message']);
             } else {
                 return redirect()->route('nin-services')
-                    ->with('error', 'Unexpected error occurred');
+                    ->with('error',  $response['message']);
             }
         } catch (\Exception $e) {
 
@@ -1191,19 +1187,19 @@ class AgencyController extends Controller
     {
 
         try {
-
+            $referenceNumber = Str::upper(Str::random(10));
             $data = [
-                'idNumber' => $trackingId,
-                'consent' => true,
+                'value' => $trackingId,
+                'ref' => $referenceNumber,
             ];
 
-            $url = env('BASE_API_URL') . '/api/ipeclearance/index.php';
-            $token = env('VERIFY_BEARER');
+            $url = env('ENDPOINT') . '/nin/ipe-clearance';
+            $token = env('ACCESS_TOKEN');
 
             $headers = [
                 'Accept: application/json, text/plain, */*',
                 'Content-Type: application/json',
-                "Authorization: Bearer $token",
+                "Authorization: $token",
             ];
 
             // Initialize cURL
