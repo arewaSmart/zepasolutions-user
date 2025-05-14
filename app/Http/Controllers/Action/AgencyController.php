@@ -1185,9 +1185,10 @@ class AgencyController extends Controller
             switch ($response['response_code']) {
 
                 case "00":
+                    $responseMeta = $response['reply'];
                     NIN_REQUEST::where('trackingId', $trackingId)
                         ->update([
-                            'reason' => $response['response'] ?? '',
+                            'reason' => 'Tracking ID: ' . $response['response'] . ' <br> NIN: ' . $responseMeta['nin'] . '<br> Names: ' . $responseMeta['name'] ?? '',
                             'status' => 'resolved'
                         ]);
 
