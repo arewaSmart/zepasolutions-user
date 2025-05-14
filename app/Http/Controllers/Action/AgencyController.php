@@ -1057,10 +1057,22 @@ class AgencyController extends Controller
 
                 Log::info('Clearance Response:', $response);
 
-                if (isset($response['response_code']) && $response['response_code'] === "00") {
-                    $successMessage = $response['message'];
+                if (isset($response['response_code'])) {
+                    switch ($response['response_code']) {
+                        case "00":
+                            $successMessage = $response['message'];
+                            break;
+
+                        case "202":
+                        case "03":
+                            return redirect()->back()->with('error', 'Error: ' . $response['message']);
+                            break;
+
+                        default:
+                            return redirect()->back()->with('error', 'Error: ' . ($response['message'] ?? 'Clearance request failed to submit'));
+                    }
                 } else {
-                    return redirect()->back()->with('error', 'Error: Clearance request failed to submit');
+                    return redirect()->back()->with('error', 'Error: No response code received');
                 }
             }
 
