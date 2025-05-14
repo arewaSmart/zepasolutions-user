@@ -1062,9 +1062,11 @@ class AgencyController extends Controller
                         case "00":
                             $successMessage = $response['message'];
                             break;
-
+                        case "02":
+                            return redirect()->back()->with('error', 'Clearance is still in progress. Please wait.');
                         case "202":
                         case "03":
+                        case "302":
                             return redirect()->back()->with('error', 'Error: ' . $response['message']);
                             break;
 
