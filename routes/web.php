@@ -132,7 +132,7 @@ Route::middleware('auth', 'verified', 'is_kyced')->group(function () {
         Route::get('nin-services', [AgencyController::class, 'ninService'])->name('nin-services');
         Route::post('request-nin-service', [AgencyController::class, 'ninServiceRequest'])->name('request-nin-service');
 
-        Route::get('/ipeStatus/{id}', [AgencyController::class, 'ipeRequestStatus'])->name('ipeStatus');
+        Route::get('/ipeStatus/{id}/{transaction}', [AgencyController::class, 'ipeRequestStatus'])->name('ipeStatus');
 
         Route::get('vnin-to-nibss', [AgencyController::class, 'vninToNibss'])->name('vnin-to-nibss');
         Route::post('request-vnin-to-nibss', [AgencyController::class, 'vninToNibssRequest'])->name('request-vnin-to-nibss');
