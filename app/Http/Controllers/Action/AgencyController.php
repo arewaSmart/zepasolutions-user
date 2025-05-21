@@ -1120,7 +1120,7 @@ class AgencyController extends Controller
                 'messages' => 'Wallet debitted with a Request fee of ' . number_format($ServiceFee, 2),
             ]);
 
-            $this->walletService->creditDeveloperWallet($payer_name, $payer_email, $payer_phone, $referenceno . "C2w", "ipe_dev_fee");
+            // $this->walletService->creditDeveloperWallet($payer_name, $payer_email, $payer_phone, $referenceno . "C2w", "ipe_dev_fee");
 
             return redirect()->back()->with('success', $successMessage);
         }
