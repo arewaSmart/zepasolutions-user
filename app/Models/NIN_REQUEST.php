@@ -20,5 +20,6 @@ class NIN_REQUEST extends Model
         'service_type',
         'description',
         'uploads',
+        'refunded_at',
     ];
 }

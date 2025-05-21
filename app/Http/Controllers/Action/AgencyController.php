@@ -1053,28 +1053,19 @@ class AgencyController extends Controller
 
             if ($request->service == 170) {
 
-                $response = $this->pushForAutoIpe($tracking_id);
+                try {
 
-                Log::info('Clearance Response:', $response);
+                    $response = $this->pushForAutoIpe($tracking_id);
 
-                if (isset($response['response_code'])) {
-                    switch ($response['response_code']) {
-                        case "00":
-                            $successMessage = $response['message'];
-                            break;
-                        case "02":
-                            return redirect()->back()->with('error', 'Clearance is still in progress. Please wait.');
-                        case "202":
-                        case "03":
-                        case "302":
-                            return redirect()->back()->with('error', 'Error: ' . $response['message']);
-                            break;
+                    Log::info('Response:', $response);
 
-                        default:
-                            return redirect()->back()->with('error', 'Error: ' . ($response['message'] ?? 'Clearance request failed to submit'));
+                    if (isset($response['status']) && $response['status'] === true) {
+                        //Flow continues;
+                    } else {
+                        return redirect()->back()->with('error', 'IPE request is not successful');
                     }
-                } else {
-                    return redirect()->back()->with('error', 'Error: No response code received');
+                } catch (\Exception $e) {
+                    return redirect()->back()->with('error', 'IPE request is not successful');
                 }
             }
 
@@ -1139,18 +1130,17 @@ class AgencyController extends Controller
     {
         try {
 
-            $data = [
-                'value' => $trackingId,
-            ];
+            $data = ['trackingId' => $trackingId];
 
-            $url = env('ENDPOINT') . '/nin/ipe-status';
-            $token = env('ACCESS_TOKEN');
+            $url = env('BASE_URL_VERIFY_USER') . 'api/v1/ipe-status';
+            $token = env('VERIFY_USER_TOKEN');
 
             $headers = [
                 'Accept: application/json, text/plain, */*',
                 'Content-Type: application/json',
-                "Authorization: $token",
+                "Authorization: Bearer $token",
             ];
+
 
             // Initialize cURL
             $ch = curl_init();
@@ -1175,40 +1165,40 @@ class AgencyController extends Controller
 
             $response = json_decode($response, true);
 
-            Log::info('Clearance Status Response:', $response);
+            if (isset($response['status']) && $response['status'] === true) {
+                $data = $response['response'];
 
-            if (!isset($response['response_code'])) {
-                // Handle API error format like: { "status": "false", "message": "..." }
-                return redirect()->back()->with('error', $response['message'] ?? 'Unknown error from IPE service');
-            }
 
-            switch ($response['response_code']) {
+                if ($data['resp_code'] === '200') {
 
-                case "00":
-                    $responseMeta = $response['reply'];
+
                     NIN_REQUEST::where('trackingId', $trackingId)
-                        ->update([
-                            'reason' => 'Tracking ID: ' . $response['response'] . ' <br> NIN: ' . $responseMeta['nin'] . '<br> Names: ' . $responseMeta['name'] ?? '',
-                            'status' => 'resolved'
-                        ]);
+                        ->where('user_id', $this->loginUserId)
+                        ->update(['reason' => $data['reply'] ?? '', 'status' => 'resolved']);
 
                     return redirect()->route('nin-services')
-                        ->with('success', 'IPE request is successful, check the query section => ' . ($response["response"] ?? 'No message'));
+                        ->with('success', 'IPE request is successful, check the query section');
+                } elseif ($data['resp_code'] === '101') {
+                    NIN_REQUEST::where('trackingId', $trackingId)
+                        ->where('user_id', $this->loginUserId)
+                        ->update(['status' => 'Processing']);
 
-                case "02":
-                case "400":
-                    return redirect()->back()->with('error', 'Clearance is still in progress. Please wait.');
-
-                case "409":
-                case "404":
-                case "405":
-                case "406":
-                case "407":
+                    return redirect()->route('nin-services')
+                        ->with('error',  $response['message']);
+                } elseif ($data['resp_code'] === '400') {
                     $this->refundIPE($transactionId, $response['message']);
-                    return redirect()->back()->with('error', $response['message']);
-
-                default:
-                    return redirect()->back()->with('error', 'Error: unknown status code (' . $response['message'] . ')');
+                    return redirect()->route('nin-services')
+                        ->with('error',  $response['message']);
+                } else {
+                    return redirect()->route('nin-services')
+                        ->with('error',  $response['message']);
+                }
+            } elseif (isset($response['status']) && $response['status'] === false) {
+                return redirect()->route('nin-services')
+                    ->with('error',  $response['message']);
+            } else {
+                return redirect()->route('nin-services')
+                    ->with('error', 'Unexpected error occurred');
             }
         } catch (\Exception $e) {
 
@@ -1220,19 +1210,16 @@ class AgencyController extends Controller
     {
 
         try {
-            $referenceNumber = Str::upper(Str::random(10));
-            $data = [
-                'value' => $trackingId,
-                'ref' => $referenceNumber,
-            ];
 
-            $url = env('ENDPOINT') . '/nin/ipe-clearance';
-            $token = env('ACCESS_TOKEN');
+            $data = ['trackingId' => $trackingId];
+
+            $url = env('BASE_URL_VERIFY_USER') . 'api/v1/ipe';
+            $token = env('VERIFY_USER_TOKEN');
 
             $headers = [
                 'Accept: application/json, text/plain, */*',
                 'Content-Type: application/json',
-                "Authorization: $token",
+                "Authorization: Bearer $token",
             ];
 
             // Initialize cURL
@@ -1256,58 +1243,65 @@ class AgencyController extends Controller
             // Close cURL session
             curl_close($ch);
 
-            $response = json_decode($response, true);
-            return $response;
+            return $response = json_decode($response, true);
         } catch (\Exception $e) {
-            return $response = [
-                'status' => false,
-                'message' => 'An error occurred while making the API request'
-            ];
         }
     }
+
     public function refundIPE($tnx, $message)
     {
 
+        //Rejected
         NIN_REQUEST::where('tnx_id', $tnx)
+            ->where('user_id', $this->loginUserId)
             ->update(['reason' => $message ?? '', 'status' => 'rejected']);
 
-        //get wallet balance
-        $wallet = Wallet::where('user_id', $this->loginUserId)->first();
-        $balance = 0;
+        // Check if already refunded
+        $notRefunded = NIN_REQUEST::where('tnx_id', $tnx)
+            ->whereNull('refunded_at')
+            ->first();
+        if ($notRefunded) {
+            //get wallet balance
+            $wallet = Wallet::where('user_id', $this->loginUserId)->first();
+            $balance = 0;
 
-        $serviceFee = Services::where('service_code', '170')->first();
+            $serviceFee = Services::where('service_code', '170')->first();
 
-        $balance = $wallet->balance + $serviceFee->amount;
+            $balance = $wallet->balance + $serviceFee->amount;
 
-        Wallet::where('user_id', $this->loginUserId)
-            ->update(['balance' => $balance]);
+            Wallet::where('user_id', $this->loginUserId)
+                ->update(['balance' => $balance]);
 
-        //Keep History 
-        $referenceno = '';
-        srand((float) microtime() * 1000000);
-        $gen = '123456123456789071234567890890';
-        $gen .= 'aBCdefghijklmn123opq45rs67tuv89wxyz'; // if you need alphabatic also
-        $ddesc = '';
-        for ($i = 0; $i < 12; $i++) {
-            $referenceno .= substr($gen, (rand() % (strlen($gen))), 1);
+            //Keep History 
+            $referenceno = '';
+            srand((float) microtime() * 1000000);
+            $gen = '123456123456789071234567890890';
+            $gen .= 'aBCdefghijklmn123opq45rs67tuv89wxyz'; // if you need alphabatic also
+            $ddesc = '';
+            for ($i = 0; $i < 12; $i++) {
+                $referenceno .= substr($gen, (rand() % (strlen($gen))), 1);
+            }
+
+            $payer_name = auth()->user()->first_name . ' ' . Auth::user()->last_name;
+            $payer_email = auth()->user()->email;
+            $payer_phone = auth()->user()->phone_number;
+
+            Transaction::create([
+                'user_id' => $this->loginUserId,
+                'payer_name' => $payer_name,
+                'payer_email' => $payer_email,
+                'payer_phone' => $payer_phone,
+                'referenceId' => $referenceno,
+                'service_type' => "IPE Rufund -" . $notRefunded->trackingId,
+                'service_description' => 'Wallet Refunded with a Request fee of ' . number_format($serviceFee->amount, 2),
+                'amount' => $serviceFee->amount,
+                'gateway' => 'Wallet',
+                'status' => 'Approved',
+            ]);
+
+            NIN_REQUEST::where('tnx_id', $tnx)
+                ->update(['refunded_at' => Carbon::now()]);
         }
-
-        $payer_name = auth()->user()->first_name . ' ' . Auth::user()->last_name;
-        $payer_email = auth()->user()->email;
-        $payer_phone = auth()->user()->phone_number;
-
-        Transaction::create([
-            'user_id' => $this->loginUserId,
-            'payer_name' => $payer_name,
-            'payer_email' => $payer_email,
-            'payer_phone' => $payer_phone,
-            'referenceId' => $referenceno,
-            'service_type' => 'NIN Service Request',
-            'service_description' => 'Wallet Refunded with a Request fee of ' . number_format($serviceFee->amount, 2),
-            'amount' => $serviceFee->amount,
-            'gateway' => 'Wallet',
-            'status' => 'Approved',
-        ]);
     }
     public function vninToNibss(Request $request)
     {

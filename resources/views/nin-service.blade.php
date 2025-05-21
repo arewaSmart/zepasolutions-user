@@ -240,7 +240,7 @@
                                                                                 <th scope="row">{{ $serialNumber++ }}
                                                                                 </th>
                                                                                 <td>{{ $data->trackingId }}
-                                                                                    @if ($data->service_type == 'IPE Instant' && $data->status == 'pending')
+                                                                                    @if ($data->service_type == 'IPE Instant' && $data->reason === null)
                                                                                         &nbsp; <a
                                                                                             href="{{ route('ipeStatus', [$data->trackingId, $data->tnx_id]) }}"
                                                                                             class="btn btn-sm btn-primary rounded">
@@ -411,7 +411,7 @@
                 let labelText2 = '';
 
                 // First block: tracking_id logic
-                if (selectedIndex === 1 || selectedIndex === 10 || selectedIndex === 2) {
+                if (selectedIndex === 1 || selectedIndex === 9) {
                     labelText = "Tracking ID";
                     newInput = $(
                         '<input type="text" id="tracking_id" maxlength="15" pattern="^[a-zA-Z0-9]{15}$" name="tracking_id" title="Tracking ID must be exactly 15 characters (letters/numbers)" class="form-control text-center" required />'
