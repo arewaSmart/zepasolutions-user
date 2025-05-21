@@ -112,19 +112,19 @@ class AgencyController extends Controller
     public function crmRequest(Request $request)
     {
         $request->validate([
-            'ticket_id' => 'required|numeric|digits:20',
-            'bms_id' =>  'required|numeric|digits:8',
+            // 'ticket_id' => 'required|numeric|digits:20',
+            'bms_id' =>  'required|numeric|digits:21',
         ]);
 
         //Check if ticket id existed
         // $exist = CRM_REQUEST::where('ticket_no', $request->ticket_id)
         // ->where('bms_ticket_no', $request->bms_id)
         // ->exists();
-        $ticketExists = CRM_REQUEST::where('ticket_no', $request->ticket_id)->exists();
+        // $ticketExists = CRM_REQUEST::where('ticket_no', $request->ticket_id)->exists();
         $bmsExists = CRM_REQUEST::where('bms_ticket_no', $request->bms_id)->exists();
 
-        if ($ticketExists || $bmsExists) {
-            return redirect()->back()->with('error', 'Sorry  Ticket ID Or BMS ID No already existed!');
+        if ($bmsExists) {
+            return redirect()->back()->with('error', 'Sorry BMS ID already existed!');
         }
 
         $count = CRM_REQUEST::all()
@@ -136,7 +136,7 @@ class AgencyController extends Controller
             return redirect()->back()->with('error', 'Note: You have reached the maximum limit of ' . $count . ' Pending requests. Please wait until one of your requests is processed before submitting additional requests. Once a request is completed, you will be able to add more.');
         }
 
-        $ticket_id = $request->ticket_id;
+        // $ticket_id = $request->ticket_id;
         $bms_id = $request->bms_id;
 
         // Services Fee
@@ -193,7 +193,7 @@ class AgencyController extends Controller
                 'tnx_id' => $trx_id,
                 'refno' => $referenceno,
                 'bms_ticket_no' => $bms_id,
-                'ticket_no' => $ticket_id,
+                // 'ticket_no' => $ticket_id,
             ]);
 
             //Notifocation

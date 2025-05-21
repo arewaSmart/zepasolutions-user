@@ -142,17 +142,16 @@
                                                     @csrf
                                                     <div class="row mb-2">
 
-                                                        <div class="col-md-12 mt-2">
+                                                        {{-- <div class="col-md-12 mt-2">
                                                             <p class="mb-2 form-label"> Ticket ID </p>
                                                             <input type="text" id="ticket_id" name="ticket_id"
                                                                 maxlength="20" class="form-control phone text-center"
                                                                 maxlength="11" required />
-                                                        </div>
+                                                        </div> --}}
                                                         <div class="col-md-12">
                                                             <p class="mb-2 form-label mt-2"> BMS ID </p>
                                                             <input type="text" id="bms_id" name="bms_id"
-                                                                maxlength="8" class="form-control text-center"
-                                                                maxlength="4" required />
+                                                                maxlength="21" class="form-control text-center" required />
                                                         </div>
                                                         <p class="mt-3 fw-bold"> CRM Request Fee:
                                                             &#x20A6;{{ number_format($ServiceFee), 2 }}</p>
