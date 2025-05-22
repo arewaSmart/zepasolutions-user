@@ -272,7 +272,7 @@
                     </a>
                 </li>
                 <li class="slide">
-                    <form method="POST" action="{{ route('logout') }}">
+                    <form method="POST" action="{{ route('logout') }}" id="logoutForm">
                         @csrf
                         <button type="submit" class="side-menu__item"
                             style="border: none; background: none; width: 100%;">

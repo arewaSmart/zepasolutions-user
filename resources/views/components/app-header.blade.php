@@ -148,7 +148,7 @@
                          </a>
                      </li>
                      <li>
-                         <form method="POST" action="{{ route('logout') }}">
+                         <form method="POST" action="{{ route('logout') }}" id="logoutForm">
                              @csrf
                              <button type="submit" class="dropdown-item d-flex align-items-center">
                                  <i class="ti ti-logout fs-18 me-2 op-7" style="margin-left:2px;"></i>

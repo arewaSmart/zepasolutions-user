@@ -42,11 +42,11 @@ document.querySelectorAll(".copy-account-number2").forEach((button) => {
         const accountNumberElement = container.querySelector(".acctno2");
         if (accountNumberElement) {
             const accountNumber = accountNumberElement.textContent.trim();
-            
+
             try {
                 // Attempt to use Clipboard API
                 await navigator.clipboard.writeText(accountNumber);
-                
+
                 // Update button text to "Copied"
                 button.textContent = "Copied";
 
@@ -187,3 +187,20 @@ function validateNumber() {
         );
     }
 }
+
+document.addEventListener("DOMContentLoaded", function () {
+    const logoutBtn = document.getElementById("logoutForm");
+
+    if (logoutBtn) {
+        logoutBtn.addEventListener("click", function () {
+            try {
+                if (typeof localStorage !== "undefined") {
+                    localStorage.removeItem("anouncementModalShown");
+                }
+            } catch (error) {
+                console.warn("Failed to remove item from localStorage:", error);
+            }
+        });
+    }
+});
+

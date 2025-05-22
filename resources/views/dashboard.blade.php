@@ -10,8 +10,8 @@
         <div class="main-content app-content">
             <div class="container-fluid">
                 {{-- @include('components.news') --}}
-               
-                <!-- Start::page-header --> 
+
+                <!-- Start::page-header -->
                 <div class="d-md-flex d-block align-items-center justify-content-between my-2 page-header-breadcrumb">
                     <div>
                         <p class="fw-semibold fs-18 mb-0">Welcome back, {{ Auth::user()->first_name }} !</p>
@@ -148,7 +148,7 @@
                                         <div class="card custom-card">
                                             <div class="card-body">
                                                 <div class="row ">
-                                                      <div class="col-6 col-md-3 text-center  mt-2">
+                                                    <div class="col-6 col-md-3 text-center  mt-2">
                                                         <a href="{{ route('more-services', 'funding') }}"> <img
                                                                 class="img-fluid" width="22%"
                                                                 src="{{ asset('assets/images/apps/fund.png') }}">
@@ -212,9 +212,9 @@
                                                             <p>Agency Services</p>
                                                         </a>
                                                     </div>
-                                                     <div class="col-6 col-md-3 text-center  mt-2">
-                                                        <a href="{{ route('support') }}"> <img
-                                                                class="img-fluid" width="22%"
+                                                    <div class="col-6 col-md-3 text-center  mt-2">
+                                                        <a href="{{ route('support') }}"> <img class="img-fluid"
+                                                                width="22%"
                                                                 src="{{ asset('assets/images/apps/support.png') }}">
                                                             <p>Contact Support</p>
                                                         </a>
@@ -372,9 +372,9 @@
                                                             <p>Agency Services</p>
                                                         </a>
                                                     </div>
-                                                     <div class="col-6 col-md-3 text-center  mt-2">
-                                                        <a href="{{ route('support') }}"> <img
-                                                                class="img-fluid" width="22%"
+                                                    <div class="col-6 col-md-3 text-center  mt-2">
+                                                        <a href="{{ route('support') }}"> <img class="img-fluid"
+                                                                width="22%"
                                                                 src="{{ asset('assets/images/apps/support.png') }}">
                                                             <p>Contact Support</p>
                                                         </a>
@@ -457,9 +457,10 @@
                         </div>
                     </div>
                 </div>
-                <a href="{{ route('profile.edit')}}"><img src="{{ asset('assets/images/advert1.jpg') }}" class="mt-1 mb-3 img-fluid"></a> 
+                <a href="{{ route('profile.edit') }}"><img src="{{ asset('assets/images/advert1.jpg') }}"
+                        class="mt-1 mb-3 img-fluid"></a>
             </div>
-            
+
         </div>
     </div>
     <div class="modal fade" id="kycModal" tabindex="-1" aria-labelledby="kycModal" data-bs-keyboard="true"
@@ -490,47 +491,80 @@
                         {{ session('error') }}
                     </div>
                 @endif
-               <div class="d-flex justify-content-center align-items-center">
-    <div class="col-md-6 col-lg-6">
-        <form id="verify" name="verifyForm" method="POST" action="{{ route('verify-user') }}">
-            @csrf
-            <div class="mb-3">
-                <p class="mb-2 text-muted text-center">Enter your BVN No.</p>
-                <input type="text" id="bvn" name="bvn" class="form-control text-center" maxlength="11" required />
-            </div>
-            <div class="text-center mb-3 d-flex justify-content-center gap-2">
-                <button type="submit" id="submit" class="btn btn-primary">
-                    <i class="lar la-check-circle"></i> Verify Now
-                </button>
-            </div>
-        </form>
+                <div class="d-flex justify-content-center align-items-center">
+                    <div class="col-md-6 col-lg-6">
+                        <form id="verify" name="verifyForm" method="POST" action="{{ route('verify-user') }}">
+                            @csrf
+                            <div class="mb-3">
+                                <p class="mb-2 text-muted text-center">Enter your BVN No.</p>
+                                <input type="text" id="bvn" name="bvn" class="form-control text-center"
+                                    maxlength="11" required />
+                            </div>
+                            <div class="text-center mb-3 d-flex justify-content-center gap-2">
+                                <button type="submit" id="submit" class="btn btn-primary">
+                                    <i class="lar la-check-circle"></i> Verify Now
+                                </button>
+                            </div>
+                        </form>
 
-        <form method="POST" action="{{ route('logout') }}" class="text-center mb-3">
-            @csrf
-            <button type="submit" class="btn btn-danger">
-                <i class="las la-sign-out-alt"></i> Logout
-            </button>
-        </form>
-    </div>
-</div>
+                        <form method="POST" action="{{ route('logout') }}" class="text-center mb-3">
+                            @csrf
+                            <button type="submit" class="btn btn-danger">
+                                <i class="las la-sign-out-alt"></i> Logout
+                            </button>
+                        </form>
+                    </div>
+                </div>
 
 
             </div>
         </div>
     </div>
 
+
+    <div class="modal fade" id="anouncement" aria-labelledby="anouncement" data-bs-keyboard="true"
+        data-bs-backdrop="static" data-bs-keyboard="false" aria-hidden="true">
+        <!-- Scrollable modal -->
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h6 class="modal-title" id="staticBackdropLabel2">📢 Important Update – SME Data Discontinuation
+                    </h6>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+
+                    <p>Dear Valued User,</p>
+                    <p>Starting June 1st, 2025, we will no longer offer SME data bundles through our platform.</p>
+
+                    <p> 💡 But not to worry! You can still buy data directly from your network provider at the cheapest
+                        available rates via our link below:</p>
+                    <p>🔗 Buy Data Now at <a href="{{ route('data') }}">https://zepasolutions.com/data</a></p>
+
+                    <p>🤝 We remain committed to your satisfaction and will continue to support you with other amazing
+                        services that meet your needs.</p>
+
+                    <p>Thank you for your continued trust.</p>
+                    <p> We're always here for you. ❤️</p>
+                    <p></p>
+                    <p>— Zepa Solutions</p>
+                    <center> <button id="proceed" class="btn btn-primary"> Continue </button></center>
+                </div>
+            </div>
+        </div>
+    </div>
 @endsection
 @push('page-js')
     <script>
-        const marqueeInner = document.querySelector('.marquee-inner');
+        // const marqueeInner = document.querySelector('.marquee-inner');
 
-        marqueeInner.addEventListener('mouseover', () => {
-            marqueeInner.style.animationPlayState = 'paused';
-        });
+        // marqueeInner.addEventListener('mouseover', () => {
+        //     marqueeInner.style.animationPlayState = 'paused';
+        // });
 
-        marqueeInner.addEventListener('mouseout', () => {
-            marqueeInner.style.animationPlayState = 'running';
-        });
+        // marqueeInner.addEventListener('mouseout', () => {
+        //     marqueeInner.style.animationPlayState = 'running';
+        // });
     </script>
     <script>
         // Trigger modal if KYC is pending
@@ -550,6 +584,26 @@
                     submitButton.innerText = 'Verifying ...';
                 });
             }
+        });
+
+        $(document).ready(function() {
+            if (!localStorage.getItem("anouncementModalShown")) {
+                // Show the modal
+                $("#anouncement").modal("show");
+
+                // Set the flag to indicate that the modal has been shown
+                localStorage.setItem("anouncementModalShown", "true");
+            }
+
+            // When the user clicks on <span> (x), close the modal
+            $(".close").click(function() {
+                $("#anouncement").fadeOut();
+            });
+
+            $("#proceed").click(function() {
+                $("#anouncement").modal("hide");
+            });
+
         });
     </script>
 @endpush
