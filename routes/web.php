@@ -196,7 +196,7 @@ Route::middleware('auth', 'verified', 'is_kyced')->group(function () {
     Route::get('/fetch-data-bundles', [UtilityController::class, 'fetchBundles']);
     Route::get('/fetch-data-bundles-price', [UtilityController::class, 'fetchBundlePrice']);
 
-    Route::get('/sme-data', [UtilityController::class, 'sme_data'])->name('sme-data');
+    Route::get('/sme-data', [UtilityController::class, 'data'])->name('sme-data');
     Route::get('/fetch-data-type', [UtilityController::class, 'fetchDataType']);
     Route::get('/fetch-data-plan', [UtilityController::class, 'fetchDataPlan']);
     Route::get('/fetch-sme-data-bundles-price', [UtilityController::class, 'fetchSmeBundlePrice']);

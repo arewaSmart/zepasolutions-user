@@ -151,25 +151,26 @@
                                 class="side-menu__item {{ request()->is('airtime') ? 'active' : '' }}">Airtime</a>
                         </li>
                         <li class="slide">
+                            <a href="{{ route('data') }}"
+                                class="side-menu__item {{ request()->is('data') ? 'active' : '' }}">Data
+                                Bundle</a>
+                        </li>
+                        <li class="slide">
 
-                        <li
+                        {{-- <li
                             class="slide has-sub {{ request()->is('data') || request()->is('sme-data') ? 'open' : '' }}">
                             <a href="javascript:void(0);"
                                 class="side-menu__item {{ request()->is('data') || request()->is('sme-data') ? 'active' : '' }}">
                                 Data Top-up<i class="fe fe-chevron-right side-menu__angle"></i></a>
                             <ul class="slide-menu child2">
-                                <li class="slide">
-                                    <a href="{{ route('data') }}"
-                                        class="side-menu__item {{ request()->is('data') ? 'active' : '' }}">Data
-                                        Bundle</a>
-                                </li>
+                               
                                 <li class="slide">
                                     <a href="{{ route('sme-data') }}"
                                         class="side-menu__item {{ request()->is('sme-data') ? 'active' : '' }}">SME
                                         Data Bundle</a>
                                 </li>
                             </ul>
-                        </li>
+                        </li> --}}
 
                         <li class="slide">
                             <a href="#" onclick="return confirm('Comming soon!');"

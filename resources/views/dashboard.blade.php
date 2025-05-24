@@ -170,7 +170,7 @@
                                                         </a>
                                                     </div>
                                                     <div class="col-6 col-md-3 text-center  mt-2">
-                                                        <a href="{{ route('more-services', 'data') }}"><img
+                                                        <a href="{{ route('data') }}"><img
                                                                 class="img-fluid" width="22%"
                                                                 src="{{ asset('assets/images/apps/data.png') }}">
                                                             <p>Buy Internet Data</p>
@@ -330,7 +330,7 @@
                                                         </a>
                                                     </div>
                                                     <div class="col-6 col-md-3 text-center  mt-2">
-                                                        <a href="{{ route('more-services', 'data') }}"><img
+                                                        <a href="{{ route('data') }}"><img
                                                                 class="img-fluid" width="22%"
                                                                 src="{{ asset('assets/images/apps/data.png') }}">
                                                             <p>Buy Internet Data</p>
