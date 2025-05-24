@@ -586,24 +586,24 @@
             }
         });
 
-        $(document).ready(function() {
-            if (!localStorage.getItem("anouncementModalShown")) {
-                // Show the modal
-                $("#anouncement").modal("show");
+        // $(document).ready(function() {
+        //     if (!localStorage.getItem("anouncementModalShown")) {
+        //         // Show the modal
+        //         $("#anouncement").modal("show");
 
-                // Set the flag to indicate that the modal has been shown
-                localStorage.setItem("anouncementModalShown", "true");
-            }
+        //         // Set the flag to indicate that the modal has been shown
+        //         localStorage.setItem("anouncementModalShown", "true");
+        //     }
 
-            // When the user clicks on <span> (x), close the modal
-            $(".close").click(function() {
-                $("#anouncement").fadeOut();
-            });
+        //     // When the user clicks on <span> (x), close the modal
+        //     $(".close").click(function() {
+        //         $("#anouncement").fadeOut();
+        //     });
 
-            $("#proceed").click(function() {
-                $("#anouncement").modal("hide");
-            });
+        //     $("#proceed").click(function() {
+        //         $("#anouncement").modal("hide");
+        //     });
 
-        });
+        // });
     </script>
 @endpush
