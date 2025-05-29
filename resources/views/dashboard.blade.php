@@ -528,26 +528,24 @@
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h6 class="modal-title" id="staticBackdropLabel2">📢 Important Update – SME Data Discontinuation
+                    <h6 class="modal-title" id="staticBackdropLabel2">🔔 Important Notice: VNIN Validation Issue
                     </h6>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
 
-                    <p>Dear Valued User,</p>
-                    <p>Starting June 1st, 2025, we will no longer offer SME data bundles through our platform.</p>
+                    <p>Dear Agents,</p>
+                    <p>We are currently experiencing an issue with the VNIN (Virtual NIN) validation service. This is impacting two key processes:</p>
 
-                    <p> 💡 But not to worry! You can still buy data directly from your network provider at the cheapest
-                        available rates via our link below:</p>
-                    <p>🔗 Buy Data Now at <a href="{{ route('data') }}">https://zepasolutions.com/data</a></p>
+                    <p> BVN Modification (Agency Only)</p>
+                    <p>VNIN submission to NIBSS</p>
 
-                    <p>🤝 We remain committed to your satisfaction and will continue to support you with other amazing
-                        services that meet your needs.</p>
-
-                    <p>Thank you for your continued trust.</p>
+                    <p>Please be assured that we are actively following up with NIMC to resolve the issue as quickly as possible. 🙏</p>
+                    <p>✅ All other services are running smoothly and remain unaffected.</p>
+                    <p>We sincerely appreciate your patience and understanding as we work to restore full functionality.</p>
                     <p> We're always here for you. ❤️</p>
                     <p></p>
-                    <p>— Zepa Solutions</p>
+                    <p>Warm regards,</p>
                     <center> <button id="proceed" class="btn btn-primary"> Continue </button></center>
                 </div>
             </div>
@@ -586,24 +584,24 @@
             }
         });
 
-        // $(document).ready(function() {
-        //     if (!localStorage.getItem("anouncementModalShown")) {
-        //         // Show the modal
-        //         $("#anouncement").modal("show");
+        $(document).ready(function() {
+            if (!localStorage.getItem("anouncementModalShown")) {
+                // Show the modal
+                $("#anouncement").modal("show");
 
-        //         // Set the flag to indicate that the modal has been shown
-        //         localStorage.setItem("anouncementModalShown", "true");
-        //     }
+                // Set the flag to indicate that the modal has been shown
+                localStorage.setItem("anouncementModalShown", "true");
+            }
 
-        //     // When the user clicks on <span> (x), close the modal
-        //     $(".close").click(function() {
-        //         $("#anouncement").fadeOut();
-        //     });
+            // When the user clicks on <span> (x), close the modal
+            $(".close").click(function() {
+                $("#anouncement").fadeOut();
+            });
 
-        //     $("#proceed").click(function() {
-        //         $("#anouncement").modal("hide");
-        //     });
+            $("#proceed").click(function() {
+                $("#anouncement").modal("hide");
+            });
 
-        // });
+        });
     </script>
 @endpush
