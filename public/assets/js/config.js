@@ -188,19 +188,19 @@ function validateNumber() {
     }
 }
 
-document.addEventListener("DOMContentLoaded", function () {
-    const logoutBtn = document.getElementById("logoutForm");
+// document.addEventListener("DOMContentLoaded", function () {
+//     const logoutBtn = document.getElementById("logoutForm");
 
-    if (logoutBtn) {
-        logoutBtn.addEventListener("click", function () {
-            try {
-                if (typeof localStorage !== "undefined") {
-                    localStorage.removeItem("anouncementModalShown");
-                }
-            } catch (error) {
-                console.warn("Failed to remove item from localStorage:", error);
-            }
-        });
-    }
-});
+//     if (logoutBtn) {
+//         logoutBtn.addEventListener("click", function () {
+//             try {
+//                 if (typeof localStorage !== "undefined") {
+//                     localStorage.removeItem("anouncementModalShown");
+//                 }
+//             } catch (error) {
+//                 console.warn("Failed to remove item from localStorage:", error);
+//             }
+//         });
+//     }
+// });
 

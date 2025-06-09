@@ -522,7 +522,7 @@
     </div>
 
 
-    <div class="modal fade" id="anouncement" aria-labelledby="anouncement" data-bs-keyboard="true"
+    {{-- <div class="modal fade" id="anouncement" aria-labelledby="anouncement" data-bs-keyboard="true"
         data-bs-backdrop="static" data-bs-keyboard="false" aria-hidden="true">
         <!-- Scrollable modal -->
         <div class="modal-dialog modal-dialog-centered">
@@ -550,7 +550,7 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div> --}}
 @endsection
 @push('page-js')
     <script>
@@ -584,24 +584,24 @@
             }
         });
 
-        $(document).ready(function() {
-            if (!localStorage.getItem("anouncementModalShown")) {
-                // Show the modal
-                $("#anouncement").modal("show");
+        // $(document).ready(function() {
+        //     if (!localStorage.getItem("anouncementModalShown")) {
+        //         // Show the modal
+        //         $("#anouncement").modal("show");
 
-                // Set the flag to indicate that the modal has been shown
-                localStorage.setItem("anouncementModalShown", "true");
-            }
+        //         // Set the flag to indicate that the modal has been shown
+        //         localStorage.setItem("anouncementModalShown", "true");
+        //     }
 
-            // When the user clicks on <span> (x), close the modal
-            $(".close").click(function() {
-                $("#anouncement").fadeOut();
-            });
+        //     // When the user clicks on <span> (x), close the modal
+        //     $(".close").click(function() {
+        //         $("#anouncement").fadeOut();
+        //     });
 
-            $("#proceed").click(function() {
-                $("#anouncement").modal("hide");
-            });
+        //     $("#proceed").click(function() {
+        //         $("#anouncement").modal("hide");
+        //     });
 
-        });
+        // });
     </script>
 @endpush
