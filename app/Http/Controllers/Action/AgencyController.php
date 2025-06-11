@@ -959,8 +959,8 @@ class AgencyController extends Controller
 
         $services = Services::where('category', 'Agency')
             ->where('type', 'NIN')
-            ->where('status', 'enabled')
-            ->orderByRaw("FIELD(service_code, 137, 170) DESC")
+            // ->where('status', 'enabled')
+            ->orderByRaw("FIELD(service_code, 170) DESC")
             ->get();
 
         return view('nin-service', [
@@ -1002,6 +1002,15 @@ class AgencyController extends Controller
         });
 
         $validator->validate();
+        //Check service is active 
+        $serviceFee = Services::where('service_code', $request->service)
+        ->where('status', 'enabled')
+        ->first();
+    
+        if (!$serviceFee) {
+            return redirect()->back()->with('error', 'Sorry, the selected service is currently unavailable.');
+        }
+    
 
         $filePath = "";
 
