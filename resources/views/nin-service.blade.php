@@ -160,6 +160,7 @@
                                                                                 <option
                                                                                     value="{{ $service->service_code }}">
                                                                                     {{ $service->name }} -
+                                                                                    {{ $service->status === 'enabled' ? '(Active)' : '(Not Active)' }}
                                                                                     &#x20A6;{{ number_format($service->amount, 2) }}
                                                                                 </option>
                                                                             @endforeach
