@@ -112,8 +112,8 @@ class AgencyController extends Controller
     public function crmRequest(Request $request)
     {
         $request->validate([
-            // 'ticket_id' => 'required|numeric|digits:20',
-            'bms_id' =>  'required|numeric|digits:21',
+            'ticket_id' => 'required|numeric|digits:8',
+            'batch_id' =>  'required|numeric|digits:7',
         ]);
 
         //Check if ticket id existed
@@ -121,10 +121,10 @@ class AgencyController extends Controller
         // ->where('bms_ticket_no', $request->bms_id)
         // ->exists();
         // $ticketExists = CRM_REQUEST::where('ticket_no', $request->ticket_id)->exists();
-        $bmsExists = CRM_REQUEST::where('bms_ticket_no', $request->bms_id)->exists();
+        $bmsExists = CRM_REQUEST::where('bms_ticket_no', $request->batch_id)->exists();
 
         if ($bmsExists) {
-            return redirect()->back()->with('error', 'Sorry BMS ID already existed!');
+            return redirect()->back()->with('error', 'Sorry BATCH ID already existed!');
         }
 
         $count = CRM_REQUEST::all()
@@ -136,8 +136,8 @@ class AgencyController extends Controller
             return redirect()->back()->with('error', 'Note: You have reached the maximum limit of ' . $count . ' Pending requests. Please wait until one of your requests is processed before submitting additional requests. Once a request is completed, you will be able to add more.');
         }
 
-        // $ticket_id = $request->ticket_id;
-        $bms_id = $request->bms_id;
+        $ticket_id = $request->ticket_id;
+        $batch_id = $request->batch_id;
 
         // Services Fee
         $ServiceFee = 0;
@@ -192,8 +192,8 @@ class AgencyController extends Controller
                 'user_id' => $this->loginUserId,
                 'tnx_id' => $trx_id,
                 'refno' => $referenceno,
-                'bms_ticket_no' => $bms_id,
-                // 'ticket_no' => $ticket_id,
+                'bms_ticket_no' => $batch_id,
+                'ticket_no' => $ticket_id,
             ]);
 
             //Notifocation

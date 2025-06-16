@@ -11,7 +11,7 @@
                 <div class="d-md-flex d-block align-items-center justify-content-between my-2 page-header-breadcrumb">
                     <div>
                         <p class="fw-semibold fs-18 mb-0">CRM</p>
-                        <span class="fs-semibold text-muted">Submit CRM request with BMS ID and Ticket Number for
+                        <span class="fs-semibold text-muted">Submit CRM request with Batch ID and Ticket Number for
                             assistance with BVN Issues.</span>
                     </div>
                 </div>
@@ -142,17 +142,17 @@
                                                     @csrf
                                                     <div class="row mb-2">
 
-                                                        {{-- <div class="col-md-12 mt-2">
+                                                        <div class="col-md-12">
+                                                            <p class="mb-2 form-label mt-2"> Batch ID </p>
+                                                            <input type="text" id="batch_id" name="batch_id"
+                                                                maxlength="7" class="form-control text-center" required />
+                                                        </div>
+                                                        <div class="col-md-12 mt-2">
                                                             <p class="mb-2 form-label"> Ticket ID </p>
                                                             <input type="text" id="ticket_id" name="ticket_id"
-                                                                maxlength="20" class="form-control phone text-center"
-                                                                maxlength="11" required />
-                                                        </div> --}}
-                                                        <div class="col-md-12">
-                                                            <p class="mb-2 form-label mt-2"> BMS ID </p>
-                                                            <input type="text" id="bms_id" name="bms_id"
-                                                                maxlength="21" class="form-control text-center" required />
+                                                                maxlength="8" class="form-control phone text-center" required />
                                                         </div>
+                                                        
                                                         <p class="mt-3 fw-bold"> CRM Request Fee:
                                                             &#x20A6;{{ number_format($ServiceFee), 2 }}</p>
                                                     </div>
@@ -191,7 +191,7 @@
                                                                     <tr class="table-primary">
                                                                         <th width="5%" scope="col">ID</th>
                                                                         <th scope="col">Reference No.</th>
-                                                                        <th scope="col">BMS ID </th>
+                                                                        <th scope="col">Batch ID </th>
                                                                         <th scope="col" class="text-center">Status
                                                                         </th>
                                                                         <th scope="col">Query</th>
