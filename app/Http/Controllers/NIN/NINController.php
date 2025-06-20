@@ -17,6 +17,7 @@ use Illuminate\Support\Str;
 use App\Services\WalletService;
 use App\Helpers\noncestrHelper;
 use App\Helpers\signatureHelper;
+use Illuminate\Support\Facades\Log;
 
 class NINController extends Controller
 {
@@ -25,6 +26,9 @@ class NINController extends Controller
 
     protected $loginUserId;
     protected $walletService;
+
+    const RESP_STATUS_SUCCESS = true;
+    const RESP_MESSAGE = null;
 
     public function __construct(WalletService $walletService)
     {
@@ -89,6 +93,8 @@ class NINController extends Controller
             'standard' => '115',
             'premium' => '116',
             'tracking' => '154',
+            'demo' => '172',
+            'basic'=>'173'
         ];
 
         $notificationsEnabled = Auth::user()->notification;
@@ -98,13 +104,16 @@ class NINController extends Controller
         $ServiceFee = $services[$serviceCodes['verification']] ?? null;
         $regular_nin_fee = $services[$serviceCodes['regular']] ?? null;
         $standard_nin_fee = $services[$serviceCodes['standard']] ?? null;
+        $basic_nin_fee = $services[$serviceCodes['basic']] ?? null;
         $premium_nin_fee = $services[$serviceCodes['premium']] ?? null;
         $trackingServiceFee = $services[$serviceCodes['tracking']] ?? null;
+        $demographicServiceFee = $services[$serviceCodes['demo']] ?? null;
 
         
         $view = match (true) {
             $request->route()->named('nin-phone') => 'nin-phone',
             $request->route()->named('nin-track') => 'nin-track',
+            $request->route()->named('nin-demo') => 'nin-demo',
             default => 'nin-verify',
         };
 
@@ -116,14 +125,17 @@ class NINController extends Controller
             'notificationsEnabled' => $notificationsEnabled,
         ];
 
-        if ($view === 'nin-phone' || $view === 'nin-verify') {
+        if ($view === 'nin-phone' || $view === 'nin-verify' ||$view === 'nin-demo') {
             $data['standard_nin_fee'] = $standard_nin_fee ?? null;
             $data['premium_nin_fee'] = $premium_nin_fee ?? null;
+            $data['basic_nin_fee'] = $basic_nin_fee ?? null;
+            $data['demographicServiceFee'] = $demographicServiceFee ?? null;
         }
 
         if ($view === 'nin-track') {
             $data['trackingServiceFee'] = $trackingServiceFee ?? null;
         }
+        
 
         return view($view, $data);
     }
@@ -292,6 +304,154 @@ class NINController extends Controller
                     return response()->json([
                         'status' => 'Verification Failed',
                         'errors' => ['No need to worry, your wallet remains secure and intact. Please try again or contact support for assistance.'],
+                    ], 422);
+                }
+            } catch (\Exception $e) {
+                return response()->json([
+                    'status' => 'Request failed',
+                    'errors' => ['An error occurred while making the API request'],
+                ], 422);
+            }
+        }
+    }
+
+    public function ninDemoRetrieve(Request $request)
+    {
+
+        $request->validate([
+            'gender' => ['required', 'in:MALE,FEMALE'],
+            'dob' => ['required', 'date'],
+            'lastName' => ['required', 'string', 'max:255'],
+            'firstName' => ['required', 'string', 'max:255'],
+        ]);
+
+        //NIN Services Fee
+        $ServiceFee = 0;
+
+        $ServiceFee = Services::where('service_code', '172')
+            ->where('status', 'enabled')
+            ->first();
+
+        if (!$ServiceFee)
+            return response()->json([
+                'message' => 'Error',
+                'errors' => ['Service Error' => 'Sorry Action not Allowed !'],
+            ], 422);
+
+        $ServiceFee = $ServiceFee->amount;
+
+        $loginUserId = auth()->user()->id;
+
+        //Check if wallet is funded
+        $wallet = Wallet::where('user_id', $loginUserId)->first();
+        $wallet_balance = $wallet->balance;
+        $balance = 0;
+
+        if ($wallet_balance < $ServiceFee) {
+            return response()->json([
+                'message' => 'Error',
+                'errors' => ['Wallet Error' => 'Sorry Wallet Not Sufficient for Transaction !'],
+            ], 422);
+        } else {
+
+            try {
+
+                $data = [
+                    'firstName' => $request->input('firstName'),
+                    'lastName' => $request->input('lastName'),
+                    'dob' => $request->input('dob'),
+                    'gender' => $request->input('gender'),
+                ];
+
+                $url = env('BASE_URL_VERIFY_USER') . '/api/v1/verify-demo';
+                $token = env('VERIFY_USER_TOKEN');
+
+                $headers = [
+                    'Accept: application/json, text/plain, */*',
+                    'Content-Type: application/json',
+                    "Authorization: Bearer $token",
+                ];
+
+                // Initialize cURL
+                $ch = curl_init();
+
+                // Set cURL options
+                curl_setopt($ch, CURLOPT_URL, $url);
+                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                curl_setopt($ch, CURLOPT_POST, true);
+                curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+                curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+
+                // Execute request
+                $response = curl_exec($ch);
+
+                // Check for cURL errors
+                if (curl_errno($ch)) {
+                    throw new \Exception('cURL Error: ' . curl_error($ch));
+                }
+
+                // Close cURL session
+                curl_close($ch);
+
+                $response = json_decode($response, true);
+
+                if (isset($response['status']) && $response['status'] === self::RESP_STATUS_SUCCESS && $response['message'] !== "norecord") {
+
+                    $data = $response['message'];
+
+                    $this->processResponseDataForNINDEMO($data);
+
+                    $balance = $wallet->balance - $ServiceFee;
+
+                    Wallet::where('user_id', $loginUserId)
+                        ->update(['balance' => $balance]);
+
+                    $serviceDesc = 'Wallet debitted with a service fee of ₦' . number_format($ServiceFee, 2);
+
+                    $referenceno = '';
+                    srand((float) microtime() * 1000000);
+                    $gen = '123456123456789071234567890890';
+                    $gen .= 'aBCdefghijklmn123opq45rs67tuv89wxyz'; // if you need alphabatic also
+                    $ddesc = '';
+                    for ($i = 0; $i < 12; $i++) {
+                        $referenceno .= substr($gen, (rand() % (strlen($gen))), 1);
+                    }
+
+                    $payer_name = auth()->user()->first_name . ' ' . Auth::user()->last_name;
+                    $payer_email = auth()->user()->email;
+                    $payer_phone = auth()->user()->phone_number;
+
+                    Transaction::create([
+                        'user_id' => $this->loginUserId,
+                        'payer_name' => $payer_name,
+                        'payer_email' => $payer_email,
+                        'payer_phone' => $payer_phone,
+                        'referenceId' => $referenceno,
+                        'service_type' => 'NIN Demo Verification',
+                        'service_description' => 'Wallet debitted with a service fee of ₦' . number_format($ServiceFee, 2),
+                        'amount' => $ServiceFee,
+                        'gateway' => 'Wallet',
+                        'status' => 'Approved',
+                    ]);
+
+                    return json_encode(['status' => 'success', 'data' => $data]);
+                } else if (isset($response['status']) && $response['status'] === self::RESP_STATUS_SUCCESS && $response['message'] === 'norecord') {
+
+                    return response()->json([
+                        'status' => 'Not Found',
+                        'errors' => ['No record found'],
+                    ], 422);
+                }else if(isset($response['status']) && $response['status'] === 'caption'){
+
+                    return response()->json([
+                        'status' => 'Verification Failed',
+                        'errors' => ['Caption: '.$response['message']],
+                    ], 422);
+
+                }else {
+                    return response()->json([
+                        'status' => 'Verification Failed',
+                        'errors' => ['Verification Failed: No need to worry, your wallet remains secure and intact. Please try again or contact support for assistance.'],
                     ], 422);
                 }
             } catch (\Exception $e) {
@@ -779,6 +939,66 @@ class NINController extends Controller
         }
     }
 
+    public function basicSlip($nin_no)
+    {
+        //NIN Services Fee
+        $ServiceFee = 0;
+        $ServiceFee = Services::where('service_code', '172')->first();
+        $ServiceFee = $ServiceFee->amount;
+
+        $loginUserId = auth()->user()->id;
+        //Check if wallet is funded
+        $wallet = Wallet::where('user_id',  $loginUserId)->first();
+        $wallet_balance = $wallet->balance;
+        $balance = 0;
+
+        if ($wallet_balance  < $ServiceFee) {
+            return response()->json([
+                "message" => "Error",
+                "errors" => array("Wallet Error" => "Sorry Wallet Not Sufficient for Transaction !")
+            ], 422);
+        } else {
+            $balance = $wallet->balance - $ServiceFee;
+
+            Wallet::where('user_id',  $loginUserId)
+                ->update(['balance' => $balance]);
+
+
+            $referenceno = "";
+            srand((float) microtime() * 1000000);
+            $data = "123456123456789071234567890890";
+            $data .= "aBCdefghijklmn123opq45rs67tuv89wxyz"; // if you need alphabatic also
+            $ddesc = "";
+            for ($i = 0; $i < 12; $i++) {
+                $referenceno .= substr($data, (rand() % (strlen($data))), 1);
+            }
+
+            $payer_name =  auth()->user()->first_name . ' ' . Auth::user()->last_name;
+            $payer_email = auth()->user()->email;
+            $payer_phone = auth()->user()->phone_number;
+
+            $user = Transaction::create([
+                'user_id' => $this->loginUserId,
+                'payer_name' =>  $payer_name,
+                'payer_email' => $payer_email,
+                'payer_phone' => $payer_phone,
+                'referenceId' => $referenceno,
+                'service_type' => 'Basic NIN Slip',
+                'service_description' => 'Wallet debitted with a service fee of ₦' . number_format($ServiceFee, 2),
+                'amount' => $ServiceFee,
+                'gateway' => 'Wallet',
+                'status' => 'Approved',
+            ]);
+
+            $this->walletService->creditDeveloperWallet($payer_name, $payer_email, $payer_phone, $referenceno . "C2w", "slip_download");
+
+            //Generate PDF
+            $repObj = new NIN_PDF_Repository();
+            $response = $repObj->basicPDF($nin_no);
+            return  $response;
+        }
+    }
+
     private function formatAndDecodeJson($jsonString)
     {
 
@@ -863,5 +1083,43 @@ class NINController extends Controller
             'phoneno' => $data['data']['telephoneNo'],
             'photo' => $data['data']['photo'],
         ]);
+    }
+
+    public function processResponseDataForNINDEMO($data)
+    {
+
+        try {
+            Verification::create([
+                'user_id' => auth()->user()->id,
+                'idno' => $data['idNumber'],
+                'type' => 'NIN',
+                'nin' => $data['idNumber'],
+                'trackingId' => $data['trackingId'],
+                'first_name' => $data['firstName'],
+                'middle_name' => $data['middleName'],
+                'last_name' => $data['lastName'],
+                'phoneno' => $data['mobile'],
+                'dob' => \Carbon\Carbon::createFromFormat('d-m-Y', $data['dateOfBirth'])->format('Y-m-d'),
+                'gender' => $data['gender'] == 'm' || $data['gender'] == 'Male' ? 'Male' : 'Female',
+                'state' => $data['self_origin_state'],
+                'lga' => $data['self_origin_lga'],
+                'town' => $data['self_origin_place'],
+                'address' => $data['addressLine'],
+                'photo' => $data['photo'],
+                'signature' => $data['signature'],
+                'residence_state' => $data['residence_state'],
+                'residence_lga' => $data['residence_lga'],
+
+            ]);
+        } catch (\Exception $e) {
+
+            Log::error('Verification creation failed: ' . $e->getMessage());
+
+            return response()->json([
+                'status' => false,
+                'message' => 'Failed to create verification record.',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 }

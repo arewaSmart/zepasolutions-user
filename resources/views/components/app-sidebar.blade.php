@@ -94,6 +94,12 @@
                                         NIN using Tracking No
                                     </a>
                                 </li>
+                                <li class="slide">
+                                    <a href="{{ route('nin-demo') }}"
+                                        class="side-menu__item {{ request()->is('nin-demo') ? 'active' : '' }}">Verify
+                                        NIN using Demographic
+                                    </a>
+                                </li>
                             </ul>
                         </li>
                         <li class="slide has-sub {{ request()->is('nin2') ? 'open' : '' }}">

@@ -75,21 +75,21 @@
                                                     <div class="col-6 col-md-3 text-center  mt-2">
                                                         <a href="{{ route('nin') }}"> <img class="img-fluid  rounded"
                                                                 width="40%" src="{{ asset('assets/images/nimc.png') }}">
-                                                            <p class=" rounded fw-bold mt-2">Verify NIN using NIN</p>
+                                                            <p class=" rounded fw-bold mt-2">Verify NIN </p>
                                                         </a>
                                                     </div>
 
                                                     <div class="col-6 col-md-3 text-center  mt-2">
                                                         <a href="{{ route('nin2') }}"> <img class="img-fluid  rounded"
                                                                 width="40%" src="{{ asset('assets/images/nimc.png') }}">
-                                                            <p class="mt-2 fw-bold ">Verify NIN using NIN V2</p>
+                                                            <p class="mt-2 fw-bold ">Verify NIN V2</p>
                                                         </a>
                                                     </div>
 
                                                     <div class="col-6 col-md-3 text-center  mt-2">
                                                         <a href="{{ route('nin-phone') }}"> <img class="img-fluid  rounded"
                                                                 width="40%" src="{{ asset('assets/images/nimc.png') }}">
-                                                            <p class=" rounded fw-bold mt-2">Verify NIN using Phone
+                                                            <p class=" rounded fw-bold mt-2">Verify NIN Phone
                                                                 Number</p>
                                                         </a>
                                                     </div>
@@ -98,8 +98,14 @@
                                                     <div class="col-6 col-md-3 text-center  mt-2">
                                                         <a href="{{ route('nin-track') }}"> <img class="img-fluid  rounded"
                                                                 width="40%" src="{{ asset('assets/images/nimc.png') }}">
-                                                            <p class=" rounded fw-bold mt-2">Verify NIN using Tracking
+                                                            <p class=" rounded fw-bold mt-2">Verify NIN Tracking
                                                                 Number</p>
+                                                        </a>
+                                                    </div>
+                                                    <div class="col-6 col-md-3 text-center  mt-2">
+                                                        <a href="{{ route('nin-demo') }}"> <img class="img-fluid  rounded"
+                                                                width="40%" src="{{ asset('assets/images/nimc.png') }}">
+                                                            <p class=" rounded fw-bold mt-2">Verify NIN Demographic</p>
                                                         </a>
                                                     </div>
                                                 @elseif ($type == 'agency')

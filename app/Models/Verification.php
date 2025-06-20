@@ -29,6 +29,12 @@ class Verification extends Model
             'state',
             'lga',
             'trackingId',
+            'lga',
+            'town',
+            'residence_state',
+            'residence_lga',
+            'residence_town',
+            'signature'
      ];
 
 }

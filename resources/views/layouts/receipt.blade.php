@@ -311,3 +311,112 @@
 </body>
 
 </html>
+{{-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="description" content="Easy Verifications for your Business">
+    <meta name="keywords" content="NIMC, BVN, ZEPA, Verification, Airtime,Bills, Identity">
+    <meta name="author" content="Zepa Developers">
+    <title>ZEPA Solutions - @yield('title')</title>
+    <!-- fav icon -->
+    <link rel="icon" href="{{ asset('assets/home/images/favicon/favicon.ico') }}" type="image/x-icon">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ asset('assets/css/receipt.css') }}">
+</head>
+
+<body>
+    @yield('content')
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script>
+        const transactionId = '{{ strtoupper($transaction->referenceId) }}';
+
+        function printReceipt() {
+            const buttonsContainer = document.querySelector('.buttons-container');
+            buttonsContainer.style.opacity = '0';
+            buttonsContainer.style.pointerEvents = 'none';
+            
+            setTimeout(() => {
+                window.print();
+                buttonsContainer.style.opacity = '1';
+                buttonsContainer.style.pointerEvents = 'all';
+            }, 300);
+        }
+
+        const shareButton = document.getElementById('shareButton');
+        const downloadButton = document.getElementById('downloadButton');
+        const receiptElement = document.getElementById('receipt');
+
+        shareButton.addEventListener('click', async () => {
+            try {
+                const buttonsContainer = document.querySelector('.buttons-container');
+                buttonsContainer.style.opacity = '0';
+                buttonsContainer.style.pointerEvents = 'none';
+                
+                const canvas = await html2canvas(receiptElement, {
+                    scale: 2,
+                    useCORS: true,
+                    logging: false,
+                });
+
+                const imageData = canvas.toDataURL('image/png', 1.0);
+                const receiptName = `ZEPA_Receipt_${transactionId}.png`;
+
+                buttonsContainer.style.opacity = '1';
+                buttonsContainer.style.pointerEvents = 'all';
+
+                if (navigator.share) {
+                    const response = await fetch(imageData);
+                    const blob = await response.blob();
+                    const file = new File([blob], receiptName, { type: 'image/png' });
+
+                    await navigator.share({
+                        files: [file],
+                        title: 'Transaction Receipt',
+                        text: 'Here is my transaction receipt from ZEPA Solutions.',
+                    });
+                } else {
+                    alert('Sharing is not supported in this browser. Please use the download option.');
+                }
+            } catch (error) {
+                console.error('Error sharing the receipt:', error);
+                alert('Error sharing receipt. Please try again.');
+            }
+        });
+
+        downloadButton.addEventListener('click', async () => {
+            try {
+                const buttonsContainer = document.querySelector('.buttons-container');
+                buttonsContainer.style.opacity = '0';
+                buttonsContainer.style.pointerEvents = 'none';
+                
+                const canvas = await html2canvas(receiptElement, {
+                    scale: 2,
+                    useCORS: true,
+                    logging: false,
+                });
+
+                const imageData = canvas.toDataURL('image/png', 1.0);
+                const receiptName = `ZEPA_Receipt_${transactionId}.png`;
+
+                buttonsContainer.style.opacity = '1';
+                buttonsContainer.style.pointerEvents = 'all';
+
+                const downloadLink = document.createElement('a');
+                downloadLink.href = imageData;
+                downloadLink.download = receiptName;
+                document.body.appendChild(downloadLink);
+                downloadLink.click();
+                document.body.removeChild(downloadLink);
+            } catch (error) {
+                console.error('Error downloading the receipt:', error);
+                alert('Error downloading receipt. Please try again.');
+            }
+        });
+    </script>
+</body>
+</html> --}}

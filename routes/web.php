@@ -91,6 +91,7 @@ Route::middleware('auth', 'verified', 'is_kyced')->group(function () {
     Route::get('/nin', [NINController::class, 'show'])->name('nin');
     Route::post('/retrieveNIN', [NINController::class, 'retrieveNIN'])->name('retrieve-nin');
     Route::post('/retrieveNIN2', [NINController::class, 'retrieveNIN2'])->name('retrieve-nin-track');
+    Route::post('/nin-demo-retrieve', [NINController::class, 'ninDemoRetrieve'])->name('nin-demo-Retrieve');
 
 
     Route::get('/nin-phone', [NINController::class, 'show'])->name('nin-phone');
@@ -173,6 +174,7 @@ Route::middleware('auth', 'verified', 'is_kyced')->group(function () {
     Route::get('/regularSlip/{id}', [NINController::class, 'regularSlip'])->name("regularSlip");
     Route::get('/standardSlip/{id}', [NINController::class, 'standardSlip'])->name("standardSlip");
     Route::get('/premiumSlip/{id}', [NINController::class, 'premiumSlip'])->name("premiumSlip");
+    Route::get('/basicSlip/{id}', [NINController::class, 'basicSlip'])->name("basicSlip");
     //End PDF Downloads Routes ------------------------------------------------------------------------------------------
 
 
