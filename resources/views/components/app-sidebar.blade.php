@@ -62,18 +62,18 @@
                 <!-- End::slide -->
                 <!-- Start::slide -->
                 <li
-                    class="slide has-sub {{ request()->is('nin') || request()->is('nin2') || request()->is('nin-phone') || request()->is('bvn') || request()->is('bvn2') || request()->is('nin-track') ? 'open' : '' }}">
+                    class="slide has-sub {{ request()->is('nin') || request()->is('nin2') || request()->is('nin-phone') || request()->is('bvn') || request()->is('bvn2') || request()->is('nin-track') || request()->is('nin-demographic') ? 'open' : '' }}">
                     <a href="javascript:void(0);"
-                        class="side-menu__item {{ request()->is('nin') || request()->is('nin2') || request()->is('nin-phone') || request()->is('bvn') || request()->is('bvn2') || request()->is('nin-track') ? 'active' : '' }}">
+                        class="side-menu__item {{ request()->is('nin') || request()->is('nin2') || request()->is('nin-phone') || request()->is('bvn') || request()->is('bvn2') || request()->is('nin-track')|| request()->is('nin-demographic') ? 'active' : '' }}">
                         <i class="bx bx-fingerprint side-menu__icon"></i>
                         <span class="side-menu__label">Identity</span>
                         <i class="fe fe-chevron-right side-menu__angle"></i>
                     </a>
                     <ul class="slide-menu child1">
                         <li
-                            class="slide has-sub {{ request()->is('nin') || request()->is('nin-phone') || request()->is('nin-track') ? 'open' : '' }}">
+                            class="slide has-sub {{ request()->is('nin') || request()->is('nin-phone') || request()->is('nin-track') || request()->is('nin-demographic') ? 'open' : '' }}">
                             <a href="javascript:void(0);"
-                                class="side-menu__item {{ request()->is('nin') || request()->is('nin-phone') || request()->is('nin-track') ? 'active' : '' }}">
+                                class="side-menu__item {{ request()->is('nin') || request()->is('nin-phone') || request()->is('nin-track') || request()->is('nin-demographic') ? 'active' : '' }}">
                                 NIN
                                 Verification <i class="fe fe-chevron-right side-menu__angle"></i></a>
                             <ul class="slide-menu child2">
@@ -96,7 +96,7 @@
                                 </li>
                                 <li class="slide">
                                     <a href="{{ route('nin-demo') }}"
-                                        class="side-menu__item {{ request()->is('nin-demo') ? 'active' : '' }}">Verify
+                                        class="side-menu__item {{ request()->is('nin-demographic') ? 'active' : '' }}">Verify
                                         NIN using Demographic
                                     </a>
                                 </li>
