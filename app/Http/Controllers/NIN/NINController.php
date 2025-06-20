@@ -363,7 +363,7 @@ class NINController extends Controller
                     'gender' => $request->input('gender'),
                 ];
 
-                $url = env('BASE_URL_VERIFY_USER') . '/api/v1/verify-demo';
+                $url = env('BASE_URL_VERIFY_USER') . 'api/v1/verify-demo';
                 $token = env('VERIFY_USER_TOKEN');
 
                 $headers = [
