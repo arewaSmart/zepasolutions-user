@@ -422,7 +422,7 @@ class AgencyController extends Controller
 
         $services = Services::where('category', 'Agency')
             ->where('type', 'BMOD')
-            ->where('status', 'enabled')
+            // ->where('status', 'enabled')
             ->get();
 
         return view('bvn-mod', compact(
@@ -455,6 +455,14 @@ class AgencyController extends Controller
             'affidavit' => 'required|file|mimes:pdf|max:10240',
         ]);
 
+        //Check service is active 
+        $serviceFee = Services::where('service_code', $request->field_to_modify)
+            ->where('status', 'enabled')
+            ->first();
+
+        if (!$serviceFee) {
+            return redirect()->back()->with('error', 'Sorry, the selected service is currently unavailable.');
+        }
 
         // if ($request->enrollment_center === 'Agency Banking') {
         //       $request->validate([
