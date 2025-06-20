@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('Verifications', function (Blueprint $table) {
+        Schema::table('verifications', function (Blueprint $table) {
             $table->text('signature')->nullable();
             $table->string('town')->nullable()->after('lga');
             $table->string('residence_state')->nullable()->after('town');
@@ -25,7 +25,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('Verifications', function (Blueprint $table) {
+        Schema::table('verifications', function (Blueprint $table) {
             $table->dropColumn(['residence_state','residence_lga','residence_town','town','signature']);
         });
     }
