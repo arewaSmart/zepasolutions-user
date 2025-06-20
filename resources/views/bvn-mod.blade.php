@@ -142,40 +142,47 @@
                                                     action="{{ route('modify-bvn') }}" enctype="multipart/form-data">
                                                     @csrf
                                                     <div class="mb-3 row">
-
-                                                        <div class="col-md-12 mt-2">
-                                                            <select name="enrollment_center" id="enrollment_center" required
-                                                                class="form-select text-center"
-                                                                aria-label="Default select example">
-                                                                <option value="">Select Enrolment Center</option>
-                                                                <option>Agency Banking</option>
-                                                                <option>First Bank</option>
-                                                                <option>Heritage Bank</option>
-                                                                <option>Keystone Bank</option>
-                                                                <option>Taj Bank</option>
-                                                                <option>Wema Bank</option>
-                                                            </select>
-                                                        </div>
-
-                                                        <div class="col-md-12  mt-2 mb-0">
-                                                            <p class="form-label"> BVN Number</p>
-                                                            <input type="text" id="bvn_number" name="bvn_number"
-                                                                maxlength="11" class="form-control  text-center" required />
-                                                        </div>
-
-                                                        <div class="col-md-12 mt-3 mb-1">
-                                                            <select name="field_to_modify" id="options"
-                                                                class="form-select text-center" required
-                                                                aria-label="Default select example">
-                                                                <option value="">-- Select Field to Modify --
-                                                                </option>
-                                                                @foreach ($services as $service)
-                                                                    <option value="{{ $service->service_code }}">
-                                                                        {{ $service->name }} -
-                                                                        &#x20A6;{{ number_format($service->amount, 2) }}
+                                                        <div class="row mt-4">
+                                                            <div class="col-md-12 mt-2">
+                                                                <p class="form-label"> Enrollment Center</p>
+                                                                <select name="enrollment_center" id="enrollment_center"
+                                                                    required class="form-select text-center"
+                                                                    aria-label="Default select example">
+                                                                    <option value="" selected disabled>Choose
                                                                     </option>
-                                                                @endforeach
-                                                            </select>
+                                                                    <option>Agency Banking</option>
+                                                                    <option>First Bank</option>
+                                                                    <option>Heritage Bank</option>
+                                                                    <option>Keystone Bank</option>
+                                                                    <option>Taj Bank</option>
+                                                                    <option>Wema Bank</option>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-md-6">
+                                                                <p class="form-label mt-1"> BVN Number</p>
+                                                                <input type="text" id="bvn_number" name="bvn_number"
+                                                                    maxlength="11" class="form-control  text-center"
+                                                                    required />
+                                                            </div>
+
+                                                            <div class="col-md-6  mt-2">
+                                                                <p class="form-label"> Modification Type</p>
+                                                                <select name="field_to_modify" id="options"
+                                                                    class="form-select text-center" required
+                                                                    aria-label="Default select example">
+                                                                    <option value="" selected disabled>-- Choose Type
+                                                                        --
+                                                                    </option>
+                                                                    @foreach ($services as $service)
+                                                                        <option value="{{ $service->service_code }}">
+                                                                            {{ $service->name }} -
+                                                                            &#x20A6;{{ number_format($service->amount, 2) }}
+                                                                        </option>
+                                                                    @endforeach
+                                                                </select>
+                                                            </div>
                                                         </div>
                                                     </div>
 
@@ -194,8 +201,19 @@
                                                                     style="font-size:24px"></i></a>
                                                             <p><small class="text-danger"> Note: For more infomation
                                                                     click on the information icon</small>
-                                                                <input class="form-control mt-2" type="file"
-                                                                    name="documents" id="documents" required />
+                                                            <div class="mt-2 row">
+                                                                <div class="col-md-6">
+                                                                    <p class="form-label mt-2"> ID Card</p>
+                                                                    <input class="form-control mt-2" type="file"
+                                                                        name="idcard" id="idcard" required />
+                                                                </div>
+                                                                <div class="col-md-6">
+                                                                    <p class="form-label mt-2"> Court Affidavit </p>
+                                                                    <input class="form-control mt-2" type="file"
+                                                                        name="affidavit" id="affidavit" required />
+                                                                </div>
+                                                            </div>
+
                                                         </div>
                                                     </div>
                                                     <button type="submit" id="modify" class="btn btn-primary"><i

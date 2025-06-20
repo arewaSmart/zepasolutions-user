@@ -450,7 +450,9 @@ class AgencyController extends Controller
             ],
             'field_to_modify' => ['required', 'string'],
             'data_to_modify' => ['required', 'string'],
-            'documents' => 'required|file|mimes:pdf|max:10240',
+            // 'documents' => 'required|file|mimes:pdf|max:10240',
+            'idcard' => 'required|file|mimes:pdf|max:10240',
+            'affidavit' => 'required|file|mimes:pdf|max:10240',
         ]);
 
 
@@ -498,13 +500,16 @@ class AgencyController extends Controller
         } else {
 
             // Retrieve the validated file
-            $file = $request->file('documents');
+            $file = $request->file('idcard');
+            $file2 = $request->file('affidavit');
 
             // Generate a unique file name or use the original name
             $fileName = time() . '_' . $file->getClientOriginalName();
+            $fileName2 = time() . '_' . $file2->getClientOriginalName();
 
             // Move the file to the storage path
             $filePath = $file->storeAs('Documents', $fileName, 'public');
+            $filePath2 = $file2->storeAs('Documents', $fileName2, 'public');
 
             $balance = $wallet->balance - $ServiceFee;
 
@@ -548,6 +553,7 @@ class AgencyController extends Controller
                 'type' => $serviceType,
                 'data_to_modify' => $request->data_to_modify,
                 'docs' => $filePath,
+                'docs2' => $filePath2,
                 'email' => $request->email ?? null,
                 'password' => $request->password ?? null,
                 'created_at' => Carbon::now(),
@@ -1004,13 +1010,13 @@ class AgencyController extends Controller
         $validator->validate();
         //Check service is active 
         $serviceFee = Services::where('service_code', $request->service)
-        ->where('status', 'enabled')
-        ->first();
-    
+            ->where('status', 'enabled')
+            ->first();
+
         if (!$serviceFee) {
             return redirect()->back()->with('error', 'Sorry, the selected service is currently unavailable.');
         }
-    
+
 
         $filePath = "";
 
