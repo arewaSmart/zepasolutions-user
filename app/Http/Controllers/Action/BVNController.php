@@ -96,6 +96,8 @@ class BVNController extends Controller
             // Close cURL session
             curl_close($ch);
 
+              Log::info('Api R|esponse: '.$response);
+
             // Decode the JSON response to an associative array
             $responseData = json_decode($response, true);
 
