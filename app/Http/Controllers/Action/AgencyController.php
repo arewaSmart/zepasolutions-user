@@ -446,7 +446,7 @@ class AgencyController extends Controller
             'enrollment_center' => [
                 'required',
                 'string',
-                'in:First Bank,Heritage Bank,Agency Banking,Taj Bank,GTbank,Wema Bank,FCMB,Zenith Bank,Access Bank,Keystone Bank',
+                'in:First Bank,Heritage Bank,Agency Banking,Taj Bank,GTbank,FCMB,Zenith Bank,Access Bank,Keystone Bank',
             ],
             'field_to_modify' => ['required', 'string'],
             'data_to_modify' => ['required', 'string'],
