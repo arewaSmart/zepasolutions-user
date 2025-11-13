@@ -151,7 +151,7 @@
                                                                     <option value="" selected disabled>Choose
                                                                     </option>
                                                                     <option>Agency Banking</option>
-                                                                    <option>First Bank</option>
+                                                                   <!-- <option>First Bank</option>-->
                                                                     <option>Heritage Bank</option>
                                                                     <option>Keystone Bank</option>
                                                                     <option>Taj Bank</option>
