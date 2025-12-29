@@ -241,7 +241,7 @@
                                                                                 <th scope="row">{{ $serialNumber++ }}
                                                                                 </th>
                                                                                 <td>{{ $data->trackingId }}
-                                                                                    @if ($data->service_type == 'IPE Instant')
+                                                                                    @if ($data->service_type == 'IPE Instant' && $data->reason === null)
                                                                                         &nbsp; <a
                                                                                             href="{{ route('ipeStatus', [$data->trackingId, $data->tnx_id]) }}"
                                                                                             class="btn btn-sm btn-primary rounded">
