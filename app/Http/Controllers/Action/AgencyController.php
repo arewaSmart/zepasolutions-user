@@ -1080,7 +1080,7 @@ class AgencyController extends Controller
 
                     $response = $this->pushForAutoIpe($tracking_id);
 
-                    Log::info('Response:', $response);
+                    // Log::info('Response:', $response);
 
                     if (isset($response['status']) && $response['status'] === true) {
                         //Flow continues;
@@ -1155,7 +1155,7 @@ class AgencyController extends Controller
 
             $data = ['trackingId' => $trackingId];
 
-            $url = env('BASE_URL_VERIFY_USER') . 'api/v1/ipe-status';
+            $url = env('BASE_URL_VERIFY_USER') . '/api/ipe-status';
             $token = env('VERIFY_USER_TOKEN');
 
             $headers = [
@@ -1189,36 +1189,33 @@ class AgencyController extends Controller
             $response = json_decode($response, true);
 
             if (isset($response['status']) && $response['status'] === true) {
-                $data = $response['response'];
 
-
-                if ($data['resp_code'] === '200') {
-
-
+                if ($response['code'] === "SUCCESSFUL") {
+                    
                     NIN_REQUEST::where('trackingId', $trackingId)
                         ->where('user_id', $this->loginUserId)
-                        ->update(['reason' => $data['reply'] ?? '', 'status' => 'resolved']);
+                        ->update(['reason' => $response['data']['reply'] ?? '', 'status' => 'resolved']);
 
                     return redirect()->route('nin-services')
                         ->with('success', 'IPE request is successful, check the query section');
-                } elseif ($data['resp_code'] === '101') {
+                } elseif ($response['code'] === "PENDING") {
+                   
                     NIN_REQUEST::where('trackingId', $trackingId)
                         ->where('user_id', $this->loginUserId)
                         ->update(['status' => 'Processing']);
 
                     return redirect()->route('nin-services')
                         ->with('error',  $response['message']);
-                } elseif ($data['resp_code'] === '400') {
-                    $this->refundIPE($transactionId, $response['message']);
-                    return redirect()->route('nin-services')
-                        ->with('error',  $response['message']);
+                
                 } else {
                     return redirect()->route('nin-services')
-                        ->with('error',  $response['message']);
+                        ->with('error',  $response["message"]);
                 }
-            } elseif (isset($response['status']) && $response['status'] === false) {
-                return redirect()->route('nin-services')
-                    ->with('error',  $response['message']);
+            } 
+            elseif (isset($response['status']) && $response['status'] === false) {
+                   $this->refundIPE($transactionId, $response['message']);
+                    return redirect()->route('nin-services')
+                        ->with('error',  $response['message']);
             } else {
                 return redirect()->route('nin-services')
                     ->with('error', 'Unexpected error occurred');
@@ -1236,7 +1233,7 @@ class AgencyController extends Controller
 
             $data = ['trackingId' => $trackingId];
 
-            $url = env('BASE_URL_VERIFY_USER') . 'api/v1/ipe';
+            $url = env('BASE_URL_VERIFY_USER') . '/api/ipe';
             $token = env('VERIFY_USER_TOKEN');
 
             $headers = [
