@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('refno');
             $table->string('phoneno');
             $table->string('dob');
-            $table->enum('status', ['resolved','pending','rejected'])->default('pending');
+            $table->enum('status', ['resolved', 'pending', 'rejected'])->default('pending');
             $table->text('reason')->nullable();
             $table->timestamps();
         });

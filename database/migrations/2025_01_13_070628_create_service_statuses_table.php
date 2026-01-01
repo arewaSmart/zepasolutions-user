@@ -12,11 +12,11 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('service_statuses', function (Blueprint $table) {
-                $table->id();
-                $table->unsignedBigInteger('service_id');
-                $table->string('service_name'); // Service ID
-                $table->boolean('is_enabled')->default(true); // True for enabled, False for disabled
-                $table->timestamps();
+            $table->id();
+            $table->unsignedBigInteger('service_id');
+            $table->string('service_name'); // Service ID
+            $table->boolean('is_enabled')->default(true); // True for enabled, False for disabled
+            $table->timestamps();
         });
     }
 

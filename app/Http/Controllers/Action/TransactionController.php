@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Models\Notification;
 use App\Models\Transaction;
 use App\Traits\ActiveUsers;
-use App\Traits\KycVerify;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -21,9 +20,10 @@ class TransactionController extends Controller
 
         $loginUserId = Auth::id();
 
-        //Check if user is Disabled
+        // Check if user is Disabled
         if ($this->is_active() != 1) {
             Auth::logout();
+
             return view('error');
         }
 
@@ -67,7 +67,6 @@ class TransactionController extends Controller
         ]);
     }
 
-
     public function reciept(Request $request)
     {
 
@@ -78,7 +77,7 @@ class TransactionController extends Controller
             ->where('user_id', $loginUserId)
             ->first();
 
-        if (!$transaction) {
+        if (! $transaction) {
             // Handle case when the transaction is not found
             abort(404);
         }
@@ -93,7 +92,7 @@ class TransactionController extends Controller
         ]);
 
         $userId = auth()->id(); // Get the authenticated user ID
-        $rateLimitKey = 'pin-attempts:' . $userId;
+        $rateLimitKey = 'pin-attempts:'.$userId;
 
         // Check if the user has reached the limit
         if (RateLimiter::tooManyAttempts($rateLimitKey, 3)) {
@@ -101,7 +100,7 @@ class TransactionController extends Controller
 
             return response()->json([
                 'success' => false,
-                'message' => 'Too many failed attempts. Please try again after ' . gmdate('i:s', $secondsUntilUnlock) . ' minutes.',
+                'message' => 'Too many failed attempts. Please try again after '.gmdate('i:s', $secondsUntilUnlock).' minutes.',
             ]);
         }
 

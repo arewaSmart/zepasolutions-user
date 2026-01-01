@@ -21,18 +21,18 @@ class kycController extends Controller
 
     public function index()
     {
-        //Check if user is Disabled
+        // Check if user is Disabled
         if ($this->is_active() != 1) {
             Auth::logout();
 
             return view('error');
         }
 
-        //Check if user is pending KYC
+        // Check if user is pending KYC
         if ($this->is_verified() == 'Pending') {
             return view('kyc');
         } else {
-            //Return to dashboard to determine appropriate route
+            // Return to dashboard to determine appropriate route
             return redirect()->route('dashboard');
         }
     }
@@ -44,7 +44,7 @@ class kycController extends Controller
                 'file' => 'image|mimes:jpeg,png,jpg|max:500',
             ],
             [
-                //Passport
+                // Passport
                 'file.required' => 'Your Recent Passport is Required',
                 'file.image' => 'The Passport must be a file of type: jpeg, png, jpg.',
                 'file.mimes' => 'The Passport must be a file of type: jpeg, png, jpg.',
@@ -83,7 +83,7 @@ class kycController extends Controller
 
             ],
             [
-                //Validation Custom Messages
+                // Validation Custom Messages
                 'Phone_Number.unique' => 'The phone number is already associated with an existing user',
                 'Identity_Number.unique' => 'The identification number is already associated with an existing user',
                 'Identity_Type.required' => 'Please select a valid Identity type from the list',
@@ -119,7 +119,7 @@ class kycController extends Controller
 
         if ($affected) {
 
-            //Get User Email Id
+            // Get User Email Id
             $email = Auth::user()->email;
 
             $mail_data = [

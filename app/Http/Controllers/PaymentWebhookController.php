@@ -17,16 +17,14 @@ use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 
 class PaymentWebhookController extends Controller
 {
-
     public function handlePayout($payload)
     {
-
 
         if (! $this->verifySignature($payload)) {
             return response()->json(['error' => 'Invalid signature'], 401);
         }
 
-        $orderId =  $payload['orderId'];
+        $orderId = $payload['orderId'];
 
         $query = Transaction::where('status', 'Pending')->where('referenceId', $orderId)->first(['amount', 'user_id']);
 
@@ -34,6 +32,7 @@ class PaymentWebhookController extends Controller
             $this->processPayoutTransaction($query->user_id, $query->amount);
         }
     }
+
     public function handleWebhook(Request $request)
     {
 
@@ -67,7 +66,6 @@ class PaymentWebhookController extends Controller
         return true;
     }
 
-
     private function processReservedAccountTransaction($payload)
     {
 
@@ -80,12 +78,12 @@ class PaymentWebhookController extends Controller
 
             Log::info('[PAYIN]:', $payload);
 
-            $virtualAccountNo =  $payload['virtualAccountNo'];
-            $orderNo =  $payload['orderNo'];
-            $amountPaid =  $payload['orderAmount'] / 100;
-            $payerBankName =  $payload['payerBankName'];
-            $payerAccountName =  $payload['payerAccountName'];
-            $service_description = 'Your wallet has been credited with ₦' . number_format($amountPaid, 2);
+            $virtualAccountNo = $payload['virtualAccountNo'];
+            $orderNo = $payload['orderNo'];
+            $amountPaid = $payload['orderAmount'] / 100;
+            $payerBankName = $payload['payerBankName'];
+            $payerAccountName = $payload['payerAccountName'];
+            $service_description = 'Your wallet has been credited with ₦'.number_format($amountPaid, 2);
             $orderStatus = $payload['orderStatus'];
 
             $response = VirtualAccount::select('user_id')->where('accountNo', $virtualAccountNo)->first();
@@ -98,8 +96,9 @@ class PaymentWebhookController extends Controller
 
     private function updateTransaction($orderNo, $amountPaid, $payerBankName, $payerAccountName, $service_description, $orderStatus)
     {
-        if ($orderStatus == 1)
-            $status = "Approved";
+        if ($orderStatus == 1) {
+            $status = 'Approved';
+        }
 
         Transaction::where('referenceId', $orderNo)
             ->update([
@@ -117,8 +116,8 @@ class PaymentWebhookController extends Controller
         Transaction::insert([
             'user_id' => $userId,
             'payer_name' => $payerAccountName,
-            //'payer_email' => auth()->user()->email,
-            //'payer_phone' => auth()->user()->phone_number,
+            // 'payer_email' => auth()->user()->email,
+            // 'payer_phone' => auth()->user()->phone_number,
             'referenceId' => $orderNo,
             'service_type' => 'Wallet Topup',
             'service_description' => $service_description,
@@ -132,7 +131,7 @@ class PaymentWebhookController extends Controller
 
     private function createTransactionForReservedAccount($userId, $orderNo, $amountPaid, $payerBankName, $payerAccountName, $service_description, $orderStatus)
     {
-        //Check if Transaction Existed in db
+        // Check if Transaction Existed in db
 
         $transaction = Transaction::where('referenceId', $orderNo)->first();
 
@@ -154,9 +153,10 @@ class PaymentWebhookController extends Controller
                 'deposit' => $wallet->deposit + $amountPaid,
             ]);
         } else {
-            Log::warning('Wallet not found for user ID: ' . $userId);
+            Log::warning('Wallet not found for user ID: '.$userId);
         }
     }
+
     private function processPayoutTransaction($userId, $amountPaid)
     {
         // Fetch wallet
@@ -167,7 +167,8 @@ class PaymentWebhookController extends Controller
             $newBalance = max(0, $wallet->balance - $amountPaid);
             $wallet->update(['balance' => $newBalance]);
         } else {
-            Log::warning('Wallet not found for user ID: ' . $userId);
+            Log::warning('Wallet not found for user ID: '.$userId);
+
             return; // Stop execution if no wallet is found
         }
 
@@ -180,7 +181,7 @@ class PaymentWebhookController extends Controller
         if ($transaction) {
             $transaction->update(['status' => 'Approved']);
         } else {
-            Log::warning('Transaction not found for user ID: ' . $userId);
+            Log::warning('Transaction not found for user ID: '.$userId);
         }
     }
 
@@ -198,13 +199,13 @@ class PaymentWebhookController extends Controller
             try {
                 Mail::to($user->email)->send(new Payment_notify_mail($mail_data));
             } catch (TransportExceptionInterface $e) {
-                Log::error('Error sending email for transaction ' . $orderNo . ': ' . $e->getMessage());
+                Log::error('Error sending email for transaction '.$orderNo.': '.$e->getMessage());
             }
 
             Notification::create([
                 'user_id' => $userId,
                 'message_title' => 'Top Up',
-                'messages' => 'Wallet TopUp of ₦' . number_format($amountPaid, 2) . ' was successful.',
+                'messages' => 'Wallet TopUp of ₦'.number_format($amountPaid, 2).' was successful.',
             ]);
         }
     }

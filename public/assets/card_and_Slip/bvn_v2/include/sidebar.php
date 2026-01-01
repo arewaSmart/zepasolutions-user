@@ -85,7 +85,7 @@
              Balance: <br>
              <strong style="font-size: 14px;">
                 <span>&#8358;</span>
-                 <?php  echo $_SESSION['balance']; ?>
+                 <?php echo $_SESSION['balance']; ?>
             </strong>
          </small>
 

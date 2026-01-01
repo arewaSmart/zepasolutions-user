@@ -8,8 +8,10 @@ use Illuminate\Database\Eloquent\Model;
 class CRM_REQUEST extends Model
 {
     use HasFactory;
-     protected $table = 'crm_requests';
-      protected $fillable = [
+
+    protected $table = 'crm_requests';
+
+    protected $fillable = [
         'user_id',
         'tnx_id',
         'refno',

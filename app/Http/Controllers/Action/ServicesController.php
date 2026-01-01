@@ -2,27 +2,23 @@
 
 namespace App\Http\Controllers\Action;
 
-
-
+use App\Http\Controllers\Controller;
 use App\Models\Notification;
 use App\Traits\ActiveUsers;
-use App\Traits\KycVerify;
-use Illuminate\Support\Facades\Auth;
-use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class ServicesController extends Controller
 {
     use ActiveUsers;
 
-
-    //Show Dashboard
+    // Show Dashboard
     public function show(Request $request)
     {
-        //Login User Id
+        // Login User Id
         $loginUserId = Auth::id();
 
-        //Check if user is Disabled
+        // Check if user is Disabled
         if ($this->is_active() != 1) {
             Auth::logout();
 

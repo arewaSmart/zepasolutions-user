@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('vnin_to_nibss', function (Blueprint $table) {
-           $table->id();
+            $table->id();
             $table->bigInteger('user_id');
             $table->bigInteger('tnx_id');
             $table->string('refno');

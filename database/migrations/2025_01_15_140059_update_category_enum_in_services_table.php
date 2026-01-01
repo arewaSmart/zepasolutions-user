@@ -22,7 +22,7 @@ return new class extends Migration
                 'Cable Sub',
                 'EPIN',
                 'Agency',
-                'Charges'
+                'Charges',
             ])->default('Verifications')->change();
         });
     }
@@ -42,7 +42,7 @@ return new class extends Migration
                 'Electricity',
                 'Cable Sub',
                 'EPIN',
-                'Agency'
+                'Agency',
             ])->default('Verifications')->change();
         });
     }

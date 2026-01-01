@@ -1,17 +1,17 @@
 <?php
 
-
 namespace App\Console\Commands;
 
 use App\Helpers\noncestrHelper;
 use App\Helpers\signatureHelper;
-use Illuminate\Console\Command;
 use App\Models\ExcelUpload;
+use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 
 class VerifyBankAccountsFromExcel extends Command
 {
     protected $signature = 'verify:bank-accounts';
+
     protected $description = 'Verify bank accounts from excel_uploads where status is 0';
 
     public function handle()
@@ -35,7 +35,7 @@ class VerifyBankAccountsFromExcel extends Command
                     $this->warn("Verification failed for: {$accountNumber}");
                 }
             } catch (\Exception $e) {
-                Log::error("Error verifying account: " . $e->getMessage());
+                Log::error('Error verifying account: '.$e->getMessage());
             }
         }
     }
@@ -55,7 +55,7 @@ class VerifyBankAccountsFromExcel extends Command
 
         $signature = signatureHelper::generate_signature($data, config('keys.private'));
 
-        $url = env('BASE_URL3') . 'api/v2/payment/merchant/payout/queryBankAccount';
+        $url = env('BASE_URL3').'api/v2/payment/merchant/payout/queryBankAccount';
         $token = env('BEARER_TOKEN');
 
         $headers = [
@@ -76,7 +76,7 @@ class VerifyBankAccountsFromExcel extends Command
         $response = curl_exec($ch);
 
         if (curl_errno($ch)) {
-            throw new \Exception('cURL Error: ' . curl_error($ch));
+            throw new \Exception('cURL Error: '.curl_error($ch));
         }
 
         curl_close($ch);

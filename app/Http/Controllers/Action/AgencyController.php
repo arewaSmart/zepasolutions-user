@@ -1069,12 +1069,15 @@ class AgencyController extends Controller
         $wallet = Wallet::where('user_id', $this->loginUserId)->first();
         $wallet_balance = $wallet->balance;
         $balance = 0;
+        $flag = "OTHERS";
 
         if ($wallet_balance < $ServiceFee) {
             return redirect()->back()->with('error', 'Sorry Wallet Not Sufficient for Transaction !');
         } else {
 
             if ($request->service == 170) {
+
+                $flag = "IPE";
 
                 try {
 
@@ -1090,6 +1093,26 @@ class AgencyController extends Controller
                 } catch (\Exception $e) {
                     return redirect()->back()->with('error', 'IPE request is not successful');
                 }
+            } elseif (in_array($request->service, ['138','139','140','141','142','143','144','146'])) {
+                
+                $flag = "Validation";
+
+                try {
+                
+                    $response = $this->pushForAutoValidation($tracking_id, $serviceType);
+
+                    Log::info('Response:', $response);
+
+                   
+                    if (isset($response['status']) && $response['status'] === true) {
+                        //Flow continues;
+                    } else {
+                        return redirect()->back()->with('error', 'NIN Service request is not successful');
+                    }
+                } catch (\Exception $e) {
+                    return redirect()->back()->with('error', 'NIN Service request is not successful !');
+                }
+
             }
 
             $balance = $wallet->balance - $ServiceFee;
@@ -1133,6 +1156,7 @@ class AgencyController extends Controller
                 'service_type' => $serviceType,
                 'description' => $request->description,
                 'uploads' => $filePath,
+                'flag' => $flag,
             ]);
 
             //Notifocation
@@ -1213,7 +1237,7 @@ class AgencyController extends Controller
                 }
             } 
             elseif (isset($response['status']) && $response['status'] === false) {
-                   $this->refundIPE($transactionId, $response['message']);
+                   $this->refundIPE($transactionId, $response['data']['reply'] ?? $response['message']);
                     return redirect()->route('nin-services')
                         ->with('error',  $response['message']);
             } else {
@@ -1226,6 +1250,130 @@ class AgencyController extends Controller
                 ->with('error', 'An error occurred while making the API request');
         }
     }
+    
+     public function ninRequestStatus($trackingId, $transactionId)
+    {
+        try {
+
+            $data = ['nin' => $trackingId];
+
+            $url = env('BASE_URL_VERIFY_USER') . '/api/nin-validation-status';
+            $token = env('VERIFY_USER_TOKEN');
+
+            $headers = [
+                'Accept: application/json, text/plain, */*',
+                'Content-Type: application/json',
+                "Authorization: Bearer $token",
+            ];
+
+
+            // Initialize cURL
+            $ch = curl_init();
+
+            // Set cURL options
+            curl_setopt($ch, CURLOPT_URL, $url);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_POST, true);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+
+            // Execute request
+            $response = curl_exec($ch);
+
+            // Check for cURL errors
+            if (curl_errno($ch)) {
+                throw new \Exception('cURL Error: ' . curl_error($ch));
+            }
+
+            // Close cURL session
+            curl_close($ch);
+
+            $response = json_decode($response, true);
+
+            if (isset($response['status']) && $response['status'] === true) {
+
+                if ($response['code'] === "SUCCESSFUL") {
+                    
+                    NIN_REQUEST::where('trackingId', $trackingId)
+                        ->where('user_id', $this->loginUserId)
+                        ->update(['reason' => $response['data']['reply'] ?? '', 'status' => 'resolved']);
+
+                    return redirect()->route('nin-services')
+                        ->with('success', 'NIN Service request is successful, check the query section');
+                } elseif ($response['code'] === "PENDING") {
+                   
+                    NIN_REQUEST::where('trackingId', $trackingId)
+                        ->where('user_id', $this->loginUserId)
+                        ->update(['status' => 'Processing']);
+
+                    return redirect()->route('nin-services')
+                        ->with('error',  $response['message']);
+                
+                } else {
+                    return redirect()->route('nin-services')
+                        ->with('error',  $response["message"]);
+                }
+            } 
+            elseif (isset($response['status']) && $response['status'] === false) {
+                //    $this->refundIPE($transactionId, $response['message']);
+                  
+                  NIN_REQUEST::where('trackingId', $trackingId)
+                        ->where('user_id', $this->loginUserId)
+            ->update(['reason' => $response['data']['reply'] ?? '', 'status' => 'rejected']);
+
+                return redirect()->route('nin-services')
+                        ->with('error',  $response['message']);
+            } else {
+                return redirect()->route('nin-services')
+                    ->with('error', 'Unexpected error occurred');
+            }
+        } catch (\Exception $e) {
+
+            return redirect()->route('nin-services')
+                ->with('error', 'An error occurred while making the API request');
+        }
+    }
+    
+    public function pushForAutoValidation( $trackingId, $serviceType){
+          try {
+
+            $data = ['nin' => $trackingId, 'message'=> $serviceType];
+
+            $url = env('BASE_URL_VERIFY_USER') . '/api/nin-validation';
+            $token = env('VERIFY_USER_TOKEN');
+
+            $headers = [
+                'Accept: application/json, text/plain, */*',
+                'Content-Type: application/json',
+                "Authorization: Bearer $token",
+            ];
+
+            // Initialize cURL
+            $ch = curl_init();
+
+            // Set cURL options
+            curl_setopt($ch, CURLOPT_URL, $url);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_POST, true);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+
+            // Execute request
+            $response = curl_exec($ch);
+
+            // Check for cURL errors
+            if (curl_errno($ch)) {
+                throw new \Exception('cURL Error: ' . curl_error($ch));
+            }
+
+            // Close cURL session
+            curl_close($ch);
+
+            return $response = json_decode($response, true);
+        } catch (\Exception $e) {
+        }
+    }
+
     public function pushForAutoIpe($trackingId)
     {
 

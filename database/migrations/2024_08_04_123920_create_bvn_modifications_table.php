@@ -21,7 +21,7 @@ return new class extends Migration
             $table->string('type');
             $table->text('data_to_modify');
             $table->text('docs');
-            $table->enum('status', ['resolved','pending','rejected'])->default('pending');
+            $table->enum('status', ['resolved', 'pending', 'rejected'])->default('pending');
             $table->text('reason')->nullable();
             $table->timestamps();
         });

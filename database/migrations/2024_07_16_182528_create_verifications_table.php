@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('verifications', function (Blueprint $table) {
             $table->id();
             $table->string('idno');
-            $table->enum('type', ['','BVN','NIN'])->default(NULL);
+            $table->enum('type', ['', 'BVN', 'NIN'])->default(null);
             $table->string('nin')->nullable();
             $table->string('first_name');
             $table->string('middle_name')->nullable();

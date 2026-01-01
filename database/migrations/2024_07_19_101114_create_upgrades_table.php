@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('refno');
             $table->string('type');
             $table->string('user_name');
-            $table->enum('status', ['Pending', 'Approved','Rejected'])->default('Pending');
+            $table->enum('status', ['Pending', 'Approved', 'Rejected'])->default('Pending');
             $table->timestamps();
         });
     }

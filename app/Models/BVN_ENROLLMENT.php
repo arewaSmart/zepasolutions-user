@@ -8,8 +8,10 @@ use Illuminate\Database\Eloquent\Model;
 class BVN_ENROLLMENT extends Model
 {
     use HasFactory;
-      protected $table = 'bvn_enrollments';
-      protected $fillable = [
+
+    protected $table = 'bvn_enrollments';
+
+    protected $fillable = [
         'user_id',
         'wallet_id',
         'tnx_id',
@@ -25,6 +27,6 @@ class BVN_ENROLLMENT extends Model
         'bank_name',
         'account_number',
         'bvn',
-        'account_name'
+        'account_name',
     ];
 }

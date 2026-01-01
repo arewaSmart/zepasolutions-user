@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('service_code');
             $table->string('name');
-            $table->enum('category', ['Upgrades','Verifications', 'Airtime','Data','A2C','Electricity','Cable Sub','EPIN','Agency'])->default('Verifications');
+            $table->enum('category', ['Upgrades', 'Verifications', 'Airtime', 'Data', 'A2C', 'Electricity', 'Cable Sub', 'EPIN', 'Agency'])->default('Verifications');
             $table->string('amount')->default(0);
             $table->string('description')->nullable();
             $table->timestamps();

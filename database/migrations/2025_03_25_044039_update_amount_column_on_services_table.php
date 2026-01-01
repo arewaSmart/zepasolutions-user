@@ -13,11 +13,10 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('services', function (Blueprint $table) {
-             $table->decimal('amount', 10, 2)->change();
+            $table->decimal('amount', 10, 2)->change();
         });
-    
 
-          DB::statement("ALTER TABLE services ALTER COLUMN amount SET DEFAULT 0.00");
+        DB::statement('ALTER TABLE services ALTER COLUMN amount SET DEFAULT 0.00');
     }
 
     /**
@@ -26,10 +25,10 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('services', function (Blueprint $table) {
-             
+
             $table->string('balance')->change();
-      
-            DB::statement("ALTER TABLE services ALTER COLUMN amount DROP DEFAULT");
+
+            DB::statement('ALTER TABLE services ALTER COLUMN amount DROP DEFAULT');
         });
     }
 };

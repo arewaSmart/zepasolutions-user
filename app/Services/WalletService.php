@@ -9,15 +9,14 @@ use App\Models\Wallet;
 
 class WalletService
 {
-
     /**
      * Credit the developer's wallet and log the transaction.
      *
-     * @param string $payerName
-     * @param string $payerEmail
-     * @param string $payerPhone
-     * @param string $referenceId
-     * @param string $serviceType
+     * @param  string  $payerName
+     * @param  string  $payerEmail
+     * @param  string  $payerPhone
+     * @param  string  $referenceId
+     * @param  string  $serviceType
      * @return void
      */
     public function creditDeveloperWallet($payerName, $payerEmail, $payerPhone, $referenceId, $serviceType)
@@ -25,11 +24,11 @@ class WalletService
         // Fetch the service fee from the database
         $serviceFee = Services::where('type', $serviceType)->value('amount');
 
-        if (!$serviceFee) {
+        if (! $serviceFee) {
             throw new \Exception("Service type '{$serviceType}' not found or fee is not set.");
         }
 
-        $developerId = config('wallet.developer_id');  
+        $developerId = config('wallet.developer_id');
 
         // Find the developer user
         $developer = User::find($developerId);
@@ -39,7 +38,7 @@ class WalletService
             $wallet = Wallet::where('user_id', $developerId)->first();
 
             if ($wallet) {
-        
+
                 // Increment the wallet balance by the service fee
                 $newBalance = $wallet->balance + $serviceFee;
 
@@ -58,14 +57,14 @@ class WalletService
                     'payer_email' => $payerEmail,
                     'payer_phone' => $payerPhone,
                     'referenceId' => $referenceId,
-                    'service_type' => ucfirst(str_replace('_', ' ', $serviceType)) . ' Fee',
-                    'service_description' => 'Developer wallet credited with ₦' . number_format($serviceFee, 2),
+                    'service_type' => ucfirst(str_replace('_', ' ', $serviceType)).' Fee',
+                    'service_description' => 'Developer wallet credited with ₦'.number_format($serviceFee, 2),
                     'amount' => $serviceFee,
                     'gateway' => 'Internal Transfer',
                     'status' => 'Approved',
                 ]);
             } else {
-                throw new \Exception("Wallet not found for developer.");
+                throw new \Exception('Wallet not found for developer.');
             }
         }
     }

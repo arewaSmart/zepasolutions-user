@@ -74,8 +74,6 @@ class BankController extends Controller
             // Execute request
             $response = curl_exec($ch);
 
-
-
             // Check for cURL errors
             if (curl_errno($ch)) {
                 throw new \Exception('cURL Error: '.curl_error($ch));
@@ -95,6 +93,7 @@ class BankController extends Controller
         }
 
     }
+
     public function createOrUpdateBank(array $data)
     {
         // Check if a bank with the given bankCode already exists
@@ -107,7 +106,8 @@ class BankController extends Controller
             ]
         );
     }
-      public function pullBankCodes()
+
+    public function pullBankCodes()
     {
         try {
             $requestTime = (int) (microtime(true) * 1000);
@@ -155,7 +155,7 @@ class BankController extends Controller
             // Close cURL session
             curl_close($ch);
 
-              Log::info('Api R|esponse: '.$response);
+            Log::info('Api R|esponse: '.$response);
 
             // Decode the JSON response to an associative array
             $responseData = json_decode($response, true);

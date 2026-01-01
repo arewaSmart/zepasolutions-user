@@ -26,7 +26,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('verifications', function (Blueprint $table) {
-            $table->dropColumn(['residence_state','residence_lga','residence_town','town','signature']);
+            $table->dropColumn(['residence_state', 'residence_lga', 'residence_town', 'town', 'signature']);
         });
     }
 };

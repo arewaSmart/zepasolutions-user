@@ -1,21 +1,20 @@
-<?php 
+<?php
 session_start();
-if (!isset($_SESSION['email'])  ) {
-  header("Location:login.php");
-  exit;
+if (! isset($_SESSION['email'])) {
+    header('Location:login.php');
+    exit;
 }
 
-if ( $_SESSION['role'] == "1") {
-  header("Location:agent/dashboard.php");
-  exit;
+if ($_SESSION['role'] == '1') {
+    header('Location:agent/dashboard.php');
+    exit;
 }
-if ( $_SESSION['role'] == "3") {
-  header("Location:admin/dashboard.php");
-  exit;
+if ($_SESSION['role'] == '3') {
+    header('Location:admin/dashboard.php');
+    exit;
 }
 
-
-include "include/header.php"; ?>
+include 'include/header.php'; ?>
 
 
 <div class="container-fluid ">
@@ -28,20 +27,20 @@ include "include/header.php"; ?>
   <?php
 
   if (isset($_SESSION['alert2']) && $_SESSION['alert2'] != '') {
-  ?>
+      ?>
 
     <div class="alert alert-danger alert-dismissible " role="alert">
       <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span>
       </button>
-      <?php echo  $_SESSION['alert2']; ?>
+      <?php echo $_SESSION['alert2']; ?>
 
 
     </div>
   <?php
 
-    unset($_SESSION['alert2']);
+        unset($_SESSION['alert2']);
   }
-  ?>
+?>
 
   <div class="row">
 
@@ -107,12 +106,12 @@ include "include/header.php"; ?>
     
   </script>
   <?php
-  include"include/init/config.php";
-  $userid = $_SESSION['userid'];
-  $select_query = "SELECT * FROM bvn_services WHERE userID = '$userid'";
-  $result = $conn->query($select_query);
-  $rows = $result->fetch_all(MYSQLI_ASSOC);
-  ?>
+include 'include/init/config.php';
+$userid = $_SESSION['userid'];
+$select_query = "SELECT * FROM bvn_services WHERE userID = '$userid'";
+$result = $conn->query($select_query);
+$rows = $result->fetch_all(MYSQLI_ASSOC);
+?>
 
   <div class="card shadow mb-4 ">
     <div class="card-header py-3  text-light" style="background: linear-gradient(90deg, rgba(10,203,159,1) 30%, rgba(14,138,76,1) 96%);border:none;">
@@ -135,31 +134,31 @@ include "include/header.php"; ?>
 
           <tbody>
             <?php
-            if (!empty($rows)) {
+          if (! empty($rows)) {
               // Use a for loop to iterate through the array
               for ($i = 0; $i < count($rows); $i++) {
-                $row = $rows[$i];
-            ?>
+                  $row = $rows[$i];
+                  ?>
                 <tr>
-                  <td><?php echo $i+1; ?></td>
-                  <td><?php echo $row["service_type"]; ?></td>
-                  <td><?php echo $row["amount"]; ?></td>
-                  <td><?php echo $row["status"]; ?></td>
-                  <td><?php echo $row["date"]; ?></td>
+                  <td><?php echo $i + 1; ?></td>
+                  <td><?php echo $row['service_type']; ?></td>
+                  <td><?php echo $row['amount']; ?></td>
+                  <td><?php echo $row['status']; ?></td>
+                  <td><?php echo $row['date']; ?></td>
                 </tr>
             <?php
               }
-            } else {
+          } else {
               echo "<tr><td colspan='7'>No records found</td></tr>";
-            }
-            ?>
+          }
+?>
           </tbody>
         </table>
 
         <?php
         // Close the database connection
         $conn->close();
-        ?>
+?>
       </div>
     </div>
   </div>
@@ -174,4 +173,4 @@ include "include/header.php"; ?>
 
 
 
-<?php include "include/footer.php"; ?>
+<?php include 'include/footer.php'; ?>

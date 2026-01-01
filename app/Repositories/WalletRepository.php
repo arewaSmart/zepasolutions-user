@@ -2,7 +2,6 @@
 
 namespace App\Repositories;
 
-use App\Models\Bonus;
 use App\Models\User;
 use App\Models\Wallet;
 
@@ -11,13 +10,13 @@ class WalletRepository
     public function createWalletAccount($loginUserId)
     {
 
-        //Check if Wallet Account Existed
+        // Check if Wallet Account Existed
         $exist = User::where('id', $loginUserId)
             ->where('wallet_is_created', 0)
             ->exists();
         if ($exist) {
 
-            //Create Wallet
+            // Create Wallet
             Wallet::create(
                 [
                     'user_id' => $loginUserId,

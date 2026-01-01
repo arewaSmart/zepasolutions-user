@@ -27,7 +27,7 @@ class CheckAgentRole
             // For example, redirect to a different page or return a different error
         }
 
-            return response()->view('errors.404', [
+        return response()->view('errors.404', [
             'title' => 'Upgrade Required',
             'message' => 'To access our agency services, please upgrade your account. Simply navigate to the dashboard page and submit an upgrade request. Our team will assist you with the next steps. Thank you for choosing our services!',
         ], 404);

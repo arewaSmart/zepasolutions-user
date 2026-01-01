@@ -251,6 +251,16 @@
                                                                                         </a>
                                                                                     @endif
 
+                                                                                    @if ($data->flag == 'Validation' && $data->reason === null)
+                                                                                        &nbsp; <a
+                                                                                            href="{{ route('ninStatus', [$data->trackingId, $data->tnx_id]) }}"
+                                                                                            class="btn btn-sm btn-primary rounded">
+                                                                                            <i class="bx bx-refresh"></i>
+                                                                                            Check
+                                                                                            Status
+                                                                                        </a>
+                                                                                    @endif
+
                                                                                 </td>
                                                                                 <td class="text-center">
                                                                                     @if ($data->status == 'resolved')

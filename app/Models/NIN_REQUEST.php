@@ -21,5 +21,6 @@ class NIN_REQUEST extends Model
         'description',
         'uploads',
         'refunded_at',
+        'flag'
     ];
 }

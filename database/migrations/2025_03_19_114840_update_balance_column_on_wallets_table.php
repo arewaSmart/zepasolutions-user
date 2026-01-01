@@ -17,7 +17,7 @@ return new class extends Migration
             $table->decimal('balance', 10, 2)->change();
         });
 
-        DB::statement("ALTER TABLE wallets ALTER COLUMN balance SET DEFAULT 0.00");
+        DB::statement('ALTER TABLE wallets ALTER COLUMN balance SET DEFAULT 0.00');
     }
 
     /**
@@ -29,6 +29,6 @@ return new class extends Migration
             $table->string('balance')->change();
         });
 
-        DB::statement("ALTER TABLE wallets ALTER COLUMN balance DROP DEFAULT");
+        DB::statement('ALTER TABLE wallets ALTER COLUMN balance DROP DEFAULT');
     }
 };

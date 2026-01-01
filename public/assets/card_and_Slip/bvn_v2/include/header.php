@@ -1,11 +1,9 @@
-<?php 
+<?php
 
-if (!isset($_SESSION['email']) && $_SESSION['email'] != true && $_SESSION['role'] != 0 ||  $_SESSION['role']== false) {
-    header("Location:login.php");
+if (! isset($_SESSION['email']) && $_SESSION['email'] != true && $_SESSION['role'] != 0 || $_SESSION['role'] == false) {
+    header('Location:login.php');
     exit;
-  }
-  
-
+}
 
 ?>
 
@@ -53,7 +51,7 @@ if (!isset($_SESSION['email']) && $_SESSION['email'] != true && $_SESSION['role'
 </head>
 
 <body id="page-top" style="background-image: url('../../img/verification.jpg');filter:.6;">
-<?php include"sidebar.php";?>
+<?php include 'sidebar.php'; ?>
    
         <!-- End of Sidebar -->
 

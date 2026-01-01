@@ -2,8 +2,8 @@
 
 namespace App\Providers;
 
-use Illuminate\Support\ServiceProvider;
 use Illuminate\Foundation\AliasLoader;
+use Illuminate\Support\ServiceProvider;
 
 class AliasServiceProvider extends ServiceProvider
 {
@@ -12,7 +12,7 @@ class AliasServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-         // Get the AliasLoader instance
+        // Get the AliasLoader instance
         $loader = AliasLoader::getInstance();
         // $loader->alias('PDF', Barryvdh\DomPDF\Facade::class);
     }

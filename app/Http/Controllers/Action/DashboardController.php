@@ -25,7 +25,6 @@ class DashboardController extends Controller
 
     protected $loginUserId;
 
-
     public function __construct()
     {
         $this->loginUserId = Auth::id();
@@ -36,9 +35,9 @@ class DashboardController extends Controller
         // Enhance later via middleware
         if ($this->is_active() != 1) {
             Auth::logout();
+
             return view('error');
         }
-
 
         $status = auth()->user()->kyc_status;
 
@@ -89,10 +88,10 @@ class DashboardController extends Controller
             'virtual_accounts' => $virtual_accounts,
             'notifications' => $notifications,
             'notifyCount' => $notifyCount,
-            'notificationsEnabled' =>  $notificationsEnabled,
+            'notificationsEnabled' => $notificationsEnabled,
             'virtual_funding' => $virtual_funding,
             'kycPending' => $kycPending,
-            'status' =>   $status
+            'status' => $status,
         ]);
     }
 
@@ -116,6 +115,7 @@ class DashboardController extends Controller
 
         return $this->verifyBVN($bvn);
     }
+
     private function verifyBVN($bvn)
     {
         try {
@@ -136,7 +136,7 @@ class DashboardController extends Controller
 
             $signature = signatureHelper::generate_signature($data, config('keys.private2'));
 
-            $url = env('Domain') . '/api/validator-service/open/bvn/inquire';
+            $url = env('Domain').'/api/validator-service/open/bvn/inquire';
             $token = env('BEARER');
             $headers = [
                 'Accept: application/json, text/plain, */*',
@@ -161,12 +161,11 @@ class DashboardController extends Controller
 
             // Check for cURL errors
             if (curl_errno($ch)) {
-                throw new \Exception('cURL Error: ' . curl_error($ch));
+                throw new \Exception('cURL Error: '.curl_error($ch));
             }
 
             // Close cURL session
             curl_close($ch);
-
 
             $data = json_decode($response, true);
 
@@ -175,27 +174,28 @@ class DashboardController extends Controller
                 $data = $data['data'];
 
                 $updateData = [
-                    'first_name'   => ucwords(strtolower($data['firstName'])),
-                    'middle_name'  => ucwords(strtolower($data['middleName'])) ?? null,
-                    'last_name'    => ucwords(strtolower($data['lastName'])),
-                    'dob'          => $data['birthday'],
-                    'gender'       => $data['gender'],
-                    'kyc_status'   => 'Verified',
-                    'idNumber'=> $bvn_no,
+                    'first_name' => ucwords(strtolower($data['firstName'])),
+                    'middle_name' => ucwords(strtolower($data['middleName'])) ?? null,
+                    'last_name' => ucwords(strtolower($data['lastName'])),
+                    'dob' => $data['birthday'],
+                    'gender' => $data['gender'],
+                    'kyc_status' => 'Verified',
+                    'idNumber' => $bvn_no,
                 ];
 
-                if (!empty($data['phoneNumber'])) {
+                if (! empty($data['phoneNumber'])) {
                     $updateData['phone_number'] = $data['phoneNumber'];
                 }
 
-                if (!empty($data['photo'])) {
+                if (! empty($data['photo'])) {
                     $updateData['profile_pic'] = $data['photo'];
                 }
 
-                 User::where('id', $this->loginUserId)->update($updateData);
-                 $this->createAccounts($this->loginUserId);
+                User::where('id', $this->loginUserId)->update($updateData);
+                $this->createAccounts($this->loginUserId);
+
                 return redirect()->back()->with('success', 'Your identity verification is complete, and youre all set to explore our services. Thank you for verifying your account!');
-            } else if ($data['respCode'] == 99120020 || $data['respCode'] == 99120024) {
+            } elseif ($data['respCode'] == 99120020 || $data['respCode'] == 99120024) {
 
                 return redirect()->back()->with('error', 'Invalid or suspended BVN detected. Please update your BVN information and try again.');
             } else {

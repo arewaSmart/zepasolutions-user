@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-       Schema::create('user_enrollments', function (Blueprint $table) {
+        Schema::create('user_enrollments', function (Blueprint $table) {
             $table->id();
             $table->string('ticket_number')->nullable();
             $table->string('bvn')->nullable();
@@ -27,11 +27,11 @@ return new class extends Migration
             $table->string('validation_status')->nullable();
             $table->text('validation_message')->nullable();
             $table->string('amount')->nullable();
-            $table->text('capture_date')->nullable();   
-            $table->text('sync_date')->nullable();    
-            $table->text('validation_date')->nullable(); 
+            $table->text('capture_date')->nullable();
+            $table->text('sync_date')->nullable();
+            $table->text('validation_date')->nullable();
             $table->timestamps();
-      });
+        });
 
     }
 

@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('nin_requests', function (Blueprint $table) {
-             $table->string('description')->nullable()->after('service_type');
+            $table->string('description')->nullable()->after('service_type');
         });
     }
 

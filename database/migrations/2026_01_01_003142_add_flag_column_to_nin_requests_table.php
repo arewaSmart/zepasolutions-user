@@ -11,13 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('pins', function (Blueprint $table) {
-            $table->id();
-            $table->bigInteger('user_id');
-            $table->longText('token');
-            $table->string('type');
-            $table->enum('status', ['approved', 'pending'])->default('pending');
-            $table->timestamps();
+        Schema::table('nin_requests', function (Blueprint $table) {
+               $table->string('flag')->nullable();
         });
     }
 
@@ -26,6 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('pins');
+        Schema::table('nin_requests', function (Blueprint $table) {
+            $table->dropColumn(['flag']);
+        });
     }
 };

@@ -9,8 +9,10 @@ class CRM_REQUEST2 extends Model
 {
     use HasFactory;
     use HasFactory;
-     protected $table = 'crm_requests2';
-      protected $fillable = [
+
+    protected $table = 'crm_requests2';
+
+    protected $fillable = [
         'user_id',
         'tnx_id',
         'refno',

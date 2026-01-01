@@ -59,7 +59,7 @@ class signatureHelper
         // Sign the data using the private key and SHA-1 algorithm
         openssl_sign($encry_data, $signature, $privateKey, OPENSSL_ALGO_SHA1);
 
-        //encode the signature in base64 and return it
+        // encode the signature in base64 and return it
         return base64_encode($signature);
     }
 

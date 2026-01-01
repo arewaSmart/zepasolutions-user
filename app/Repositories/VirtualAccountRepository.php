@@ -2,16 +2,15 @@
 
 namespace App\Repositories;
 
-use Exception;
 use App\Helpers\noncestrHelper;
 use App\Helpers\signatureHelper;
 use App\Models\User;
+use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class VirtualAccountRepository
 {
-
     public function createVirtualAccount($loginUserId)
     {
 
@@ -22,18 +21,18 @@ class VirtualAccountRepository
 
             $userDetails = User::where('id', $loginUserId)->first();
 
-            $customer_name = trim($userDetails->first_name . ' ' . $userDetails->middle_name . ' ' . $userDetails->last_name);
-            
+            $customer_name = trim($userDetails->first_name.' '.$userDetails->middle_name.' '.$userDetails->last_name);
+
             try {
 
                 $requestTime = (int) (microtime(true) * 1000);
                 $noncestr = noncestrHelper::generateNonceStr();
-                $accountReference = "ZW" . strtoupper(bin2hex(random_bytes(5)));
+                $accountReference = 'ZW'.strtoupper(bin2hex(random_bytes(5)));
 
                 $data = [
                     'requestTime' => $requestTime,
                     'identityType' => 'personal',
-                    'licenseNumber' =>  $userDetails->idNumber,
+                    'licenseNumber' => $userDetails->idNumber,
                     'virtualAccountName' => $customer_name,
                     'version' => env('VERSION'),
                     'customerName' => $customer_name,
@@ -42,11 +41,11 @@ class VirtualAccountRepository
                     'nonceStr' => $noncestr,
                 ];
 
-                 Log::info($data); 
+                Log::info($data);
 
                 $signature = signatureHelper::generate_signature($data, config('keys.private'));
 
-                $url = env('BASE_URL3') . 'api/v2/virtual/account/label/create';
+                $url = env('BASE_URL3').'api/v2/virtual/account/label/create';
                 $token = env('BEARER_TOKEN');
                 $headers = [
                     'Accept: application/json, text/plain, */*',
@@ -69,10 +68,10 @@ class VirtualAccountRepository
                 // Execute request
                 $response = curl_exec($ch);
 
-                Log::info($response);         
+                Log::info($response);
                 // Check for cURL errors
                 if (curl_errno($ch)) {
-                    throw new \Exception('cURL Error: ' . curl_error($ch));
+                    throw new \Exception('cURL Error: '.curl_error($ch));
                 }
 
                 // Close cURL session
@@ -89,7 +88,7 @@ class VirtualAccountRepository
                 // Check for success
                 if (isset($response['respCode']) && $response['respCode'] === '00000000') {
 
-                    $res =  DB::table('virtual_accounts')->insert([
+                    $res = DB::table('virtual_accounts')->insert([
                         'user_id' => $loginUserId,
                         'accountReference' => $response['data']['accountReference'],
                         'accountNo' => $response['data']['virtualAccountNo'],
@@ -104,7 +103,7 @@ class VirtualAccountRepository
                     User::where('id', $loginUserId)->update(['vwallet_is_created' => 1]);
                 }
             } catch (\Exception $e) {
-                Log::error('Error creating virtual account for user ' . $loginUserId . ': ' . $e->getMessage());
+                Log::error('Error creating virtual account for user '.$loginUserId.': '.$e->getMessage());
 
                 return response()->json(['error' => 'Failed to create virtual account.'], 500);
             }

@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('sme_datas', function (Blueprint $table) {
-           $table->enum('status', ['enabled', 'disabled'])->default('enabled')->after('validity'); // Add enum column
+            $table->enum('status', ['enabled', 'disabled'])->default('enabled')->after('validity'); // Add enum column
         });
     }
 
@@ -22,7 +22,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('sme_datas', function (Blueprint $table) {
-           $table->dropColumn('status');
+            $table->dropColumn('status');
         });
     }
 };

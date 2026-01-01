@@ -69,21 +69,22 @@ class ProfileController extends Controller
             'profile_pic' => 'nullable|image|mimes:jpeg,png,jpg|max:1028',
         ]);
 
-          $user = Auth::user();
-        
-          // Convert image to base64 if uploaded
+        $user = Auth::user();
+
+        // Convert image to base64 if uploaded
         if ($request->hasFile('profile_pic')) {
             $image = $request->file('profile_pic');
             $base64Image = base64_encode(file_get_contents($image->getRealPath()));
             $user->profile_pic = $base64Image;
         }
 
-        $user->update($request->only('phone_number', 'gender','profile_pic'));
+        $user->update($request->only('phone_number', 'gender', 'profile_pic'));
 
         return redirect()->back()->with('message', 'Profile updated successfully.');
- 
+
     }
-  public function passwordUpdate(Request $request)
+
+    public function passwordUpdate(Request $request)
     {
         // Validate the request
         $request->validate([
@@ -114,6 +115,7 @@ class ProfileController extends Controller
             return redirect()->back()->with('error', 'Failed to update password.');
         }
     }
+
     /**
      * Delete the user's account.
      */
@@ -149,13 +151,13 @@ class ProfileController extends Controller
         }
 
         // Rate limiting for OTP requests
-        $key = 'otp-request-' . auth()->id();
+        $key = 'otp-request-'.auth()->id();
 
         if (RateLimiter::tooManyAttempts($key, 3)) {
 
             $seconds = RateLimiter::availableIn($key);
 
-            return response()->json(['error' => 'Too many OTP requests. Please try again in ' . ceil($seconds / 60) .
+            return response()->json(['error' => 'Too many OTP requests. Please try again in '.ceil($seconds / 60).
                 ' minutes.'], 429);
         }
 
@@ -241,7 +243,7 @@ class ProfileController extends Controller
             $ServiceFee = Services::where('service_code', '105')->first();
             $ServiceFee = $ServiceFee->amount;
 
-            //Notification Count
+            // Notification Count
             $count = 0;
             $count = Upgrade::where('user_id', $loginUserId)->count();
 
@@ -252,7 +254,7 @@ class ProfileController extends Controller
                 ], 422);
             }
 
-            //Check if wallet is funded
+            // Check if wallet is funded
             $wallet = Wallet::where('user_id', $loginUserId)->first();
             $wallet_balance = $wallet->balance;
             $balance = 0;
@@ -277,7 +279,7 @@ class ProfileController extends Controller
                     $referenceno .= substr($data, (rand() % (strlen($data))), 1);
                 }
 
-                $payer_name = auth()->user()->first_name . ' ' . Auth::user()->last_name;
+                $payer_name = auth()->user()->first_name.' '.Auth::user()->last_name;
                 $payer_email = auth()->user()->email;
                 $payer_phone = auth()->user()->phone_number;
 
@@ -288,7 +290,7 @@ class ProfileController extends Controller
                     'payer_phone' => $payer_phone,
                     'referenceId' => $referenceno,
                     'service_type' => 'Account Update Request',
-                    'service_description' => 'Wallet debitted with Upgrade Fee of ₦' . number_format($ServiceFee, 2),
+                    'service_description' => 'Wallet debitted with Upgrade Fee of ₦'.number_format($ServiceFee, 2),
                     'amount' => $ServiceFee,
                     'gateway' => 'Wallet',
                     'status' => 'Pending',
@@ -296,7 +298,7 @@ class ProfileController extends Controller
 
                 $txnId = $transaction->id;
                 $refno = $transaction->referenceId;
-                //Submit the request
+                // Submit the request
 
                 Upgrade::create([
                     'user_id' => $loginUserId,

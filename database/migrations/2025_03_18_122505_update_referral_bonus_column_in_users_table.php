@@ -16,7 +16,7 @@ return new class extends Migration
             $table->decimal('referral_bonus', 10, 2)->change();
         });
 
-        DB::statement("ALTER TABLE users ALTER COLUMN referral_bonus SET DEFAULT 0.00");
+        DB::statement('ALTER TABLE users ALTER COLUMN referral_bonus SET DEFAULT 0.00');
     }
 
     /**
@@ -28,6 +28,6 @@ return new class extends Migration
             $table->string('referral_bonus')->change();
         });
 
-        DB::statement("ALTER TABLE users ALTER COLUMN referral_bonus DROP DEFAULT");
+        DB::statement('ALTER TABLE users ALTER COLUMN referral_bonus DROP DEFAULT');
     }
 };
