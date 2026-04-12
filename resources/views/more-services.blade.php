@@ -196,13 +196,13 @@
                                                         </a>
                                                     </div>
 
-                                                    <div class="col-6 col-md-3 text-center  mt-2">
+                                                    {{-- <div class="col-6 col-md-3 text-center  mt-2">
                                                         <a href="{{ route('transfer') }}"><img
                                                                 class="img-fluid border rounded" width="31%"
                                                                 src="{{ asset('assets/images/bank-img.png') }}">
                                                             <p class=" rounded fw-bold mt-2">Transfer to Bank</p>
                                                         </a>
-                                                    </div>
+                                                    </div> --}}
                                                 @endif
 
                                             </div>

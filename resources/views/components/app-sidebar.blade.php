@@ -53,10 +53,10 @@
                                 class="side-menu__item {{ request()->is('claim') ? 'active' : '' }}">Claim Bonus
                             </a>
                         </li>
-                        <li class="slide">
+                        {{-- <li class="slide">
                             <a href="{{ route('transfer') }}"
                                 class="side-menu__item {{ request()->is('transfer') ? 'active' : '' }}">Transfer</a>
-                        </li>
+                        </li> --}}
                     </ul>
                 </li>
                 <!-- End::slide -->
