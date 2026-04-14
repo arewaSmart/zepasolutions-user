@@ -112,7 +112,7 @@ Route::middleware('auth', 'verified', 'is_kyced')->group(function () {
     Route::get('p2p', [WalletController::class, 'p2p'])->name('p2p');
     Route::get('getReciever', [WalletController::class, 'getReciever']);
     Route::get('funding', [WalletController::class, 'funding'])->name('funding');
-    Route::post('transfer-funds', [WalletController::class, 'transfer'])->name('transfer-funds');
+   // Route::post('transfer-funds', [WalletController::class, 'transfer'])->name('transfer-funds');
 
     // Begin Agency Services--------------------------------------------------------------------------------
     Route::middleware(['check.agent'])->group(function () {
