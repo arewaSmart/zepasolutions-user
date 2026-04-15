@@ -228,7 +228,7 @@ Route::middleware('auth', 'verified', 'is_kyced')->group(function () {
     Route::post('/verifyPayments', [WalletController::class, 'verify'])->name('verify');
 
     // Payout
-   // Route::get('/transfer', [WalletController::class, 'showpayout'])->name('transfer');
+    Route::get('/transfer', [WalletController::class, 'showpayout'])->name('transfer');
     Route::get('/verifyBankAccount', [BankController::class, 'verifyBankAccount'])->name('verifyBankAccount');
     Route::post('/payout', [WalletController::class, 'payout'])->name('payout');
     Route::post('/validatePin', [TransactionController::class, 'validatePin'])->name('pin.validate');
