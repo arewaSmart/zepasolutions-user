@@ -183,134 +183,136 @@ class WalletController extends Controller
 
     public function transfer(Request $request)
     {
+        return redirect()->back()->with('error', 'Payout is undergoing maintenance!');
+        
+ //      $request->validate([
+//             'Wallet_ID' => 'required|numeric|digits:11',
+//             'Amount' => 'required|numeric|min:50|max:100000',
+//         ]);
 
-        $request->validate([
-            'Wallet_ID' => 'required|numeric|digits:11',
-            'Amount' => 'required|numeric|min:50|max:100000',
-        ]);
+//         $exists = User::where('phone_number', $request->Wallet_ID)->exists();
 
-        $exists = User::where('phone_number', $request->Wallet_ID)->exists();
+//         if ($exists) {
 
-        if ($exists) {
+//             if (Auth::user()->phone_number == $request->Wallet_ID) {
 
-            if (Auth::user()->phone_number == $request->Wallet_ID) {
+//                 return redirect()->back()->with('error', 'Nice try! But our system is one step ahead!');
+//             }
 
-                return redirect()->back()->with('error', 'Nice try! But our system is one step ahead!');
-            }
+//             $Receiver_details = User::where('phone_number', $request->Wallet_ID)->first();
 
-            $Receiver_details = User::where('phone_number', $request->Wallet_ID)->first();
+//             if ($Receiver_details->wallet_is_created == 0) {
 
-            if ($Receiver_details->wallet_is_created == 0) {
+//                 return redirect()->back()->with('error', 'Account is pending KYC Verification!');
+//             }
 
-                return redirect()->back()->with('error', 'Account is pending KYC Verification!');
-            }
+//             // Check if wallet is funded
+//             $wallet = Wallet::where('user_id', $this->loginUserId)->first();
+//             $wallet_balance = $wallet->balance;
+//             $balance = 0;
 
-            // Check if wallet is funded
-            $wallet = Wallet::where('user_id', $this->loginUserId)->first();
-            $wallet_balance = $wallet->balance;
-            $balance = 0;
+//             if ($wallet_balance < $request->Amount) {
+//                 return redirect()->back()->with('error', 'Sorry Wallet Not Sufficient for Transaction !');
+//             } else {
 
-            if ($wallet_balance < $request->Amount) {
-                return redirect()->back()->with('error', 'Sorry Wallet Not Sufficient for Transaction !');
-            } else {
+//                 $balance = $wallet->balance - $request->Amount;
 
-                $balance = $wallet->balance - $request->Amount;
+//                 $affected = Wallet::where('user_id', $this->loginUserId)
+//                     ->update(['balance' => $balance]);
 
-                $affected = Wallet::where('user_id', $this->loginUserId)
-                    ->update(['balance' => $balance]);
+//                 // Recivers details
 
-                // Recivers details
+//                 // get reciever wallet id
+//                 $results = User::where('phone_number', $request->Wallet_ID)->first();
 
-                // get reciever wallet id
-                $results = User::where('phone_number', $request->Wallet_ID)->first();
+//                 $wallet = Wallet::where('user_id', $results->id)->first();
+//                 $bal = $wallet->balance + $request->Amount;
+//                 $bal2 = $wallet->deposit + $request->Amount;
 
-                $wallet = Wallet::where('user_id', $results->id)->first();
-                $bal = $wallet->balance + $request->Amount;
-                $bal2 = $wallet->deposit + $request->Amount;
+//                 Wallet::where('user_id', $results->id)
+//                     ->update(['balance' => $bal, 'deposit' => $bal2]);
 
-                Wallet::where('user_id', $results->id)
-                    ->update(['balance' => $bal, 'deposit' => $bal2]);
+//                 // Transactions and notifications
 
-                // Transactions and notifications
+//                 $referenceno = '';
+//                 srand((float) microtime() * 1000000);
+//                 $gen = '123456123456789071234567890890';
+//                 $gen .= 'aBCdefghijklmn123opq45rs67tuv89wxyz'; // if you need alphabatic also
+//                 $ddesc = '';
+//                 for ($i = 0; $i < 12; $i++) {
+//                     $referenceno .= substr($gen, (rand() % (strlen($gen))), 1);
+//                 }
 
-                $referenceno = '';
-                srand((float) microtime() * 1000000);
-                $gen = '123456123456789071234567890890';
-                $gen .= 'aBCdefghijklmn123opq45rs67tuv89wxyz'; // if you need alphabatic also
-                $ddesc = '';
-                for ($i = 0; $i < 12; $i++) {
-                    $referenceno .= substr($gen, (rand() % (strlen($gen))), 1);
-                }
+//                 $payer_name = auth()->user()->first_name.' '.Auth::user()->last_name;
+//                 $payer_email = auth()->user()->email;
+//                 $payer_phone = auth()->user()->phone_number;
 
-                $payer_name = auth()->user()->first_name.' '.Auth::user()->last_name;
-                $payer_email = auth()->user()->email;
-                $payer_phone = auth()->user()->phone_number;
+//                 Transaction::insert(
+//                     [[
+//                         'user_id' => $this->loginUserId,
+//                         'payer_name' => $Receiver_details->first_name.' '.$Receiver_details->last_name,
+//                         'payer_email' => $Receiver_details->email,
+//                         'payer_phone' => $Receiver_details->phone_number,
+//                         'referenceId' => $referenceno,
+//                         'service_type' => 'Wallet Transfer',
+//                         'service_description' => 'Wallet debitted with ₦'.number_format($request->Amount, 2).'
+//                         transferred to
+//                         ('.$Receiver_details->first_name.' '.$Receiver_details->last_name.')',
+//                         'amount' => $request->Amount,
+//                         'gateway' => 'Wallet',
+//                         'status' => 'Approved',
+//                         'created_at' => Carbon::now(),
+//                         'updated_at' => Carbon::now(),
+//                     ], [
+//                         'user_id' => $results->id,
+//                         'payer_name' => $payer_name,
+//                         'payer_email' => $payer_email,
+//                         'payer_phone' => $payer_phone,
+//                         'referenceId' => $referenceno,
+//                         'service_type' => 'Wallet Top up',
+//                         'service_description' => 'Wallet creditted with ₦'.number_format(
+//                             $request->Amount,
+//                             2
+//                         ).' By ('.$payer_name.')',
+//                         'amount' => $request->Amount,
+//                         'gateway' => 'Wallet',
+//                         'status' => 'Approved',
+//                         'created_at' => Carbon::now(),
+//                         'updated_at' => Carbon::now(),
+//                     ]]
+//                 );
 
-                Transaction::insert(
-                    [[
-                        'user_id' => $this->loginUserId,
-                        'payer_name' => $Receiver_details->first_name.' '.$Receiver_details->last_name,
-                        'payer_email' => $Receiver_details->email,
-                        'payer_phone' => $Receiver_details->phone_number,
-                        'referenceId' => $referenceno,
-                        'service_type' => 'Wallet Transfer',
-                        'service_description' => 'Wallet debitted with ₦'.number_format($request->Amount, 2).'
-                        transferred to
-                        ('.$Receiver_details->first_name.' '.$Receiver_details->last_name.')',
-                        'amount' => $request->Amount,
-                        'gateway' => 'Wallet',
-                        'status' => 'Approved',
-                        'created_at' => Carbon::now(),
-                        'updated_at' => Carbon::now(),
-                    ], [
-                        'user_id' => $results->id,
-                        'payer_name' => $payer_name,
-                        'payer_email' => $payer_email,
-                        'payer_phone' => $payer_phone,
-                        'referenceId' => $referenceno,
-                        'service_type' => 'Wallet Top up',
-                        'service_description' => 'Wallet creditted with ₦'.number_format(
-                            $request->Amount,
-                            2
-                        ).' By ('.$payer_name.')',
-                        'amount' => $request->Amount,
-                        'gateway' => 'Wallet',
-                        'status' => 'Approved',
-                        'created_at' => Carbon::now(),
-                        'updated_at' => Carbon::now(),
-                    ]]
-                );
+//                 // Notifocation
+//                 // In App Notification
+//                 Notification::insert([
+//                     [
+//                         'user_id' => $this->loginUserId,
+//                         'message_title' => 'Wallet Transfer',
+//                         'messages' => 'Transfer of ₦'.number_format($request->Amount, 2).' was successful',
+//                     ],
+//                     [
+//                         'user_id' => $results->id,
+//                         'message_title' => 'Wallet Top up',
+//                         'messages' => 'Wallet Credited with ₦'.number_format($request->Amount, 2),
+//                     ],
+//                 ]);
 
-                // Notifocation
-                // In App Notification
-                Notification::insert([
-                    [
-                        'user_id' => $this->loginUserId,
-                        'message_title' => 'Wallet Transfer',
-                        'messages' => 'Transfer of ₦'.number_format($request->Amount, 2).' was successful',
-                    ],
-                    [
-                        'user_id' => $results->id,
-                        'message_title' => 'Wallet Top up',
-                        'messages' => 'Wallet Credited with ₦'.number_format($request->Amount, 2),
-                    ],
-                ]);
+//                 $successMessage = 'Transfer Successful';
 
-                $successMessage = 'Transfer Successful';
+//                 // Correctly format the link
+//                 $link = '&nbsp; <a href="'.route('reciept', $referenceno).'"><i class="bi bi-download"></i>
+//                           Download Receipt</a>';
 
-                // Correctly format the link
-                $link = '&nbsp; <a href="'.route('reciept', $referenceno).'"><i class="bi bi-download"></i>
-                          Download Receipt</a>';
+//                 return redirect()->back()->with('success', $successMessage.' '.$link);
+//             }
+//         } else {
+//             return redirect()->back()->with('error', 'Sorry Wallet ID does not exist !');
+//         }
 
-                return redirect()->back()->with('success', $successMessage.' '.$link);
-            }
-        } else {
-            return redirect()->back()->with('error', 'Sorry Wallet ID does not exist !');
-        }
+//         $successMessage = '';
 
-        $successMessage = '';
+//         return redirect()->back()->with('success', $successMessage);
 
-        return redirect()->back()->with('success', $successMessage);
     }
 
     public function funding()
