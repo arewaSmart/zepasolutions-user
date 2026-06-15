@@ -27,7 +27,7 @@
                             <div class="col-xl-12">
                                 <div class="row">
                                     <!-- Wallet Balance -->
-                                    <div class="col-xxl-3 col-lg-6 col-md-6">
+                                    <div class="col-xxl-3 col-xl-3 col-lg-3 col-md-6">
                                         <div class="card custom-card overflow-hidden">
                                             <div class="card-body">
                                                 <div class="d-flex align-items-top justify-content-between">
@@ -54,7 +54,7 @@
                                     </div>
 
                                     <!-- Hold Balance -->
-                                    <div class="col-xxl-3 col-lg-6 col-md-6">
+                                    <div class="col-xxl-3 col-xl-3 col-lg-3 col-md-6">
                                         <div class="card custom-card overflow-hidden">
                                             <div class="card-body">
                                                 <div class="d-flex align-items-top justify-content-between">
@@ -81,7 +81,7 @@
                                     </div>
 
                                     <!-- Deposited -->
-                                    <div class="col-xxl-3 col-lg-6 col-md-6">
+                                    <div class="col-xxl-3 col-xl-3 col-lg-3 col-md-6">
                                         <div class="card custom-card overflow-hidden">
                                             <div class="card-body">
                                                 <div class="d-flex align-items-top justify-content-between">
@@ -106,7 +106,7 @@
                                     </div>
 
                                     <!-- Spent -->
-                                    <div class="col-xxl-3 col-lg-6 col-md-6">
+                                    <div class="col-xxl-3 col-xl-3 col-lg-3 col-md-6">
                                         <div class="card custom-card overflow-hidden">
                                             <div class="card-body">
                                                 <div class="d-flex align-items-top justify-content-between">
