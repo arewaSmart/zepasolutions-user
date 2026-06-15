@@ -92,7 +92,21 @@
                                             <tbody>
                                                 @foreach ($transactions as $data)
                                                     @php
-                                                        $isCredit = in_array(strtolower($data->type), ['credit', 'deposit']);
+                                                        $typeLower = strtolower($data->type ?? '');
+                                                        $isCredit = false;
+                                                        if (in_array($typeLower, ['credit', 'deposit'])) {
+                                                            $isCredit = true;
+                                                        } elseif ($typeLower === 'debit') {
+                                                            $isCredit = false;
+                                                        } else {
+                                                            $desc = strtolower(($data->service_description ?? '') . ' ' . ($data->description ?? ''));
+                                                            if (str_contains($desc, 'credited') || str_contains($desc, 'received') || str_contains($desc, 'refund') || str_contains($desc, 'deposit') || str_contains($desc, 'topup') || str_contains($desc, 'top-up') || str_contains($desc, 'funding') || str_contains($desc, 'increment')) {
+                                                                $isCredit = true;
+                                                            }
+                                                        }
+                                                        
+                                                        $typeLabel = $data->type ? strtoupper($data->type) : ($isCredit ? 'CREDIT' : 'DEBIT');
+                                                        
                                                         $statusClass = 'secondary';
                                                         $statusLabel = strtoupper($data->status);
                                                         
@@ -111,7 +125,7 @@
                                                         </td>
                                                         <td>
                                                             <span class="badge bg-{{ $isCredit ? 'success' : 'danger' }}-subtle text-{{ $isCredit ? 'success' : 'danger' }} rounded-pill px-2.5 py-1 text-uppercase fw-semibold fs-11">
-                                                                {{ $data->type }}
+                                                                {{ $typeLabel }}
                                                             </span>
                                                         </td>
                                                         <td>

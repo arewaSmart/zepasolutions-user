@@ -40,6 +40,7 @@ class TransactionService
             'amount' => $amount,
             'gateway' => 'Wallet',
             'status' => 'Approved',
+            'type' => 'credit',
         ]);
     }
 }

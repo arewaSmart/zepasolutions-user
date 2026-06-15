@@ -103,6 +103,7 @@ class PaymentWebhookController extends Controller
                 'amount' => $amountPaid,
                 'gateway' => $payerBankName,
                 'status' => $status,
+                'type' => 'credit',
             ]);
     }
 
@@ -117,6 +118,7 @@ class PaymentWebhookController extends Controller
             'amount' => $amountPaid,
             'gateway' => $payerBankName,
             'status' => 'Approved',
+            'type' => 'credit',
         ]);
     }
 
