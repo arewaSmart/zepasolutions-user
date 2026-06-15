@@ -68,7 +68,7 @@ class WalletController extends Controller
 
         $transaction = DB::table('claim_counts')->first();
 
-        $transaction_count = $transaction->transaction_count ?? 5;
+        $transaction_count = $transaction->transaction_count ?? 2;
 
         $users = User::where('refferral_id', $this->loginUserId)
             ->withCount('transactions')
@@ -113,7 +113,7 @@ class WalletController extends Controller
         try {
             DB::transaction(function () use ($user_id) {
                 $transaction = DB::table('claim_counts')->first();
-                $transaction_count = $transaction->transaction_count ?? 5;
+                $transaction_count = $transaction->transaction_count ?? 2;
 
                 // Lock the user record for update to prevent concurrent claims
                 $user = User::where('id', $user_id)->lockForUpdate()->first();
@@ -125,7 +125,7 @@ class WalletController extends Controller
                 $claim_id = $user->claim_id;
 
                 if ($claim_id != 0 || $count < $transaction_count) {
-                    throw new \Exception('You are not eligible to claim the bonus at this time. Please ensure your referrals have completed the required minimum of 5 transactions to qualify.');
+                    throw new \Exception('You are not eligible to claim the bonus at this time. Please ensure your referrals have completed the required minimum of ' . $transaction_count . ' transactions to qualify.');
                 }
 
                 $bonus = BonusHistory::where('referred_user_id', $user_id)->first();

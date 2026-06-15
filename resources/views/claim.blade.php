@@ -14,7 +14,7 @@
                     <div>
                         <p class="fw-semibold fs-18 mb-0">Claim Referral Bonus</p>
                         <span class="fs-semibold text-muted">To qualify for a bonus, each referral must complete a minimum of
-                            5
+                            {{ $transaction_count }}
                             transactions. Once this requirement is met, the bonus can be claimed. </span>
                     </div>
                     <div class="alert alert-outline-light d-flex align-items-center shadow-lg" role="alert">

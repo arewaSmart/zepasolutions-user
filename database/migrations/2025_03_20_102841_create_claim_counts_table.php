@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('claim_counts', function (Blueprint $table) {
             $table->id();
-            $table->integer('transaction_count')->default(5);
+            $table->integer('transaction_count')->default(2);
             $table->timestamps();
         });
     }
