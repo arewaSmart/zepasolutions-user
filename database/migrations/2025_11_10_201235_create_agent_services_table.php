@@ -13,7 +13,7 @@ return new class extends Migration {
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->foreignId('service_id')->constrained('services')->cascadeOnDelete();
             $table->foreignId('service_field_id')->nullable()->constrained('service_fields')->nullOnDelete();
-            $table->foreignId('transaction_id')->constrained()->cascadeOnDelete();
+            $table->unsignedBigInteger('transaction_id');
             $table->string('service_type', 50)->default('not_selected');
             $table->string('field_code', 20)->nullable();
             $table->string('ticket_id', 8)->nullable();
