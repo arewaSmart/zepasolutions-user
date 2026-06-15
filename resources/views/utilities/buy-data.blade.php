@@ -105,8 +105,7 @@
 
                                 {{-- Submit --}}
                                 <div class="d-grid mt-4">
-                                    <button type="button" class="btn btn-primary btn-lg fw-semibold"
-                                            data-bs-toggle="modal" data-bs-target="#pinModal">
+                                    <button type="button" id="proceedBtn" class="btn btn-primary btn-lg fw-semibold">
                                         Proceed to Buy
                                     </button>
                                 </div>
@@ -173,8 +172,100 @@
     .pin-digit-box:focus { border-color: #3b82f6 !important; box-shadow: 0 0 0 4px rgba(59,130,246,0.15) !important; outline: none !important; }
 </style>
 
+@push('page-js')
 <script>
-(function() {
+$(document).ready(function () {
+    // 1. Fetch Bundles on Network change
+    $("#service_id").change(function () {
+        let service_id = $(this).val();
+        if (!service_id) {
+            $("#bundle").empty().append("<option value=''>Choose Bundle</option>");
+            $("#amountToPay").val("");
+            return;
+        }
+        
+        $.ajax({
+            type: "GET",
+            url: "{{ route('fetch.bundles') }}",
+            data: { id: service_id },
+            dataType: "json",
+            success: function (response) {
+                var len = response.length;
+                $("#bundle").empty();
+                $("#bundle").append("<option value=''>Choose Bundle</option>");
+
+                for (var i = 0; i < len; i++) {
+                    var name = response[i]["name"];
+                    var variation_code = response[i]["variation_code"];
+                    $("#bundle").append("<option value='" + variation_code + "'>" + name + "</option>");
+                }
+                $("#amountToPay").val("");
+            },
+            error: function (data) {
+                console.error("Error fetching bundles", data);
+            },
+        });
+    });
+
+    // 2. Fetch Bundle Price on Bundle change
+    $("#bundle").change(function () {
+        let bundle_id = $(this).val();
+        if (!bundle_id) {
+            $("#amountToPay").val("");
+            return;
+        }
+
+        $.ajax({
+            type: "GET",
+            url: "{{ route('fetch.bundle.price') }}",
+            data: { id: bundle_id },
+            dataType: "json",
+            success: function (response) {
+                $("#amountToPay").val("₦ " + response);
+            },
+            error: function (data) {
+                console.error("Error fetching bundle price", data);
+            },
+        });
+    });
+
+    // 3. Network detection & Auto-selection
+    const networkPrefixes = {
+        'mtn-data': ['0803','0806','0703','0706','0810','0813','0814','0816','0903','0906','0913','0916','07025','07026','0704','09065'],
+        'glo-data': ['0805','0807','0705','0811','0815','0905','0915'],
+        'airtel-data': ['0802','0808','0701','0708','0812','0901','0902','0904','0907','0912'],
+        'etisalat-data': ['0809','0817','0818','0908','0909']
+    };
+
+    window.validateNumber = function() {
+        const phoneInput = document.getElementById('mobileno');
+        const networkResultDiv = document.getElementById('networkResult');
+        const serviceSelect = document.getElementById('service_id');
+        
+        let phoneNumber = phoneInput.value;
+        phoneNumber = phoneNumber.replace(/[^0-9]/g, '');
+        phoneInput.value = phoneNumber;
+        
+        networkResultDiv.textContent = '';
+        
+        if (phoneNumber.length >= 4) {
+            const prefix = phoneNumber.substring(0, 4);
+            for (const network in networkPrefixes) {
+                if (networkPrefixes[network].includes(prefix)) {
+                    const name = network.replace('-data', '').toUpperCase();
+                    networkResultDiv.innerHTML = `<span class="text-success fw-bold"><i class="bi bi-check-circle-fill"></i> Detected ${name} Network</span>`;
+                    
+                    if (serviceSelect.value !== network) {
+                        serviceSelect.value = network;
+                        $(serviceSelect).trigger('change');
+                    }
+                    break;
+                }
+            }
+        }
+    };
+
+    // 4. PIN Confirmation & Validation Modal Logic
     const pinBoxes = document.querySelectorAll('.pin-digit-box');
     const hiddenPinInput = document.getElementById('pinInput');
     const pinError = document.getElementById('pinError');
@@ -183,13 +274,44 @@
     const confirmPinText = document.getElementById('confirmPinText');
     const confirmBtn = document.getElementById('confirmPinBtn');
 
-    document.getElementById('pinModal').addEventListener('show.bs.modal', function() {
+    // Trigger modal programmatically after validation
+    $("#proceedBtn").click(function() {
+        const serviceId = $("#service_id").val();
+        const bundle = $("#bundle").val();
+        const mobileno = $("#mobileno").val();
+
+        if (!serviceId) {
+            alert("Please select a network provider.");
+            return;
+        }
+        if (!bundle) {
+            alert("Please select a data bundle.");
+            return;
+        }
+        if (!mobileno || mobileno.length !== 11 || isNaN(mobileno)) {
+            alert("Please enter a valid 11-digit phone number.");
+            return;
+        }
+
+        // Set modal transaction details
+        const selectedNetworkText = $("#service_id option:selected").text();
+        const selectedBundleText = $("#bundle option:selected").text();
+        const amountVal = $("#amountToPay").val() || "₦ 0.00";
+
+        document.getElementById('modal-data-desc').textContent = selectedNetworkText + " - " + selectedBundleText;
+        document.getElementById('modal-data-amount').textContent = amountVal.replace("₦ ", "");
+
+        // Reset PIN fields
         pinBoxes.forEach((box, i) => { box.value = ''; box.disabled = i > 0; });
         hiddenPinInput.value = '';
         pinError.classList.add('d-none');
         confirmBtn.disabled = true;
         confirmPinText.textContent = 'Confirm & Proceed';
         pinLoader.classList.add('d-none');
+
+        // Show Modal
+        const pinModal = new bootstrap.Modal(document.getElementById('pinModal'));
+        pinModal.show();
         setTimeout(() => pinBoxes[0].focus(), 300);
     });
 
@@ -260,8 +382,9 @@
             confirmPinText.textContent = 'Confirm & Proceed';
         });
     });
-})();
+});
 </script>
+@endpush
 
             </div>
         </div>

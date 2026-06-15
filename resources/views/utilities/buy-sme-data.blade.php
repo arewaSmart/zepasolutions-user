@@ -100,8 +100,7 @@
 
                                 {{-- Submit --}}
                                 <div class="d-grid mt-4">
-                                    <button type="button" class="btn btn-primary btn-lg fw-semibold"
-                                            data-bs-toggle="modal" data-bs-target="#pinModal">
+                                    <button type="button" id="proceedBtn" class="btn btn-primary btn-lg fw-semibold">
                                         Purchase Data
                                     </button>
                                 </div>
@@ -167,176 +166,221 @@
         }
         .pin-digit-box:focus { border-color: #3b82f6 !important; box-shadow: 0 0 0 4px rgba(59,130,246,0.15) !important; outline: none !important; }
     </style>
-<div class="row mt-3">
-
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script>
-    $(document).ready(function () {
-        $("#service_id").change(function () {
-            let service_id = $(this).val();
-            if(!service_id) return;
-            
-            $.ajax({
-                type: "get",
-                url: "{{ route('sme.fetch.type') }}",
-                data: { id: service_id },
-                dataType: "json",
-                success: function (response) {
-                    var len = response.length;
-                    $("#type").empty();
-                    $("#type").append("<option value=''>Data Type</option>");
-
-                    for (var i = 0; i < len; i++) {
-                        var plan_type = response[i]["plan_type"];
-                        $("#type").append("<option value='" + plan_type + "'>" + plan_type + "</option>");
-                    }
-                    $("#plan").empty().append("<option value=''>Select Plan</option>");
-                    $("#amountToPay").val("");
-                },
-                error: function (data) {
-                    console.error("Error fetching data types", data);
-                },
-            });
-        });
-
-        $("#type").change(function () {
-            let service_id = $("#service_id").val();
-            let type = $(this).val();
-            if(!service_id || !type) return;
-
-            $.ajax({
-                type: "get",
-                url: "{{ route('sme.fetch.plan') }}",
-                data: { id: service_id, type: type },
-                dataType: "json",
-                success: function (response) {
-                    var len = response.length;
-                    $("#plan").empty();
-                    $("#plan").append("<option value=''>Data Plan</option>");
-
-                    for (var i = 0; i < len; i++) {
-                        var plan_text = response[i]["size"] + " " + response[i]["plan_type"] + " (" + response[i]["amount"] + ") " + response[i]["validity"];
-                        var id = response[i]["data_id"];
-                        $("#plan").append("<option value='" + id + "'>" + plan_text + "</option>");
-                    }
-                    $("#amountToPay").val("");
-                },
-                error: function (data) {
-                    console.error("Error fetching data plans", data);
-                },
-            });
-        });
-
-        $("#plan").change(function () {
-            let plan_id = $(this).val();
-            if(!plan_id) {
-                $("#amountToPay").val("");
-                return;
-            }
-
-            $.ajax({
-                type: "get",
-                url: "{{ route('sme.fetch.price') }}",
-                data: { id: plan_id },
-                dataType: "json",
-                success: function (response) {
-                    $("#amountToPay").val("₦ " + response);
-                },
-                error: function (data) {
-                    console.error("Error fetching price", data);
-                },
-            });
-        });
-
-        // PIN Confirmation Logic (Vanilla JS with 4-digit boxes)
-        (function() {
-            const pinBoxes = document.querySelectorAll('.pin-digit-box');
-            const hiddenPinInput = document.getElementById('pinInput');
-            const pinError = document.getElementById('pinError');
-            const pinErrorText = document.getElementById('pinErrorText');
-            const pinLoader = document.getElementById('pinLoader');
-            const confirmPinText = document.getElementById('confirmPinText');
-            const confirmBtn = document.getElementById('confirmPinBtn');
-
-            document.getElementById('pinModal').addEventListener('show.bs.modal', function() {
-                pinBoxes.forEach((box, i) => { box.value = ''; box.disabled = i > 0; });
-                hiddenPinInput.value = '';
-                pinError.classList.add('d-none');
-                confirmBtn.disabled = true;
-                confirmPinText.textContent = 'Confirm Purchase';
-                pinLoader.classList.add('d-none');
-                setTimeout(() => pinBoxes[0].focus(), 300);
-            });
-
-            pinBoxes.forEach((box, index) => {
-                box.addEventListener('input', function(e) {
-                    if (!/^[0-9]$/.test(e.target.value)) { e.target.value = ''; return; }
-                    if (index < pinBoxes.length - 1 && e.target.value) {
-                        pinBoxes[index + 1].disabled = false; pinBoxes[index + 1].focus();
-                    }
-                    updatePin();
-                });
-                box.addEventListener('keydown', function(e) {
-                    if (e.key === 'Backspace') {
-                        if (box.value === '' && index > 0) {
-                            pinBoxes[index - 1].focus(); pinBoxes[index].disabled = true; pinBoxes[index - 1].value = '';
-                        } else { box.value = ''; }
-                        updatePin();
-                    }
-                });
-                box.addEventListener('paste', function(e) {
-                    e.preventDefault();
-                    const pasted = e.clipboardData.getData('text').trim();
-                    if (/^[0-9]{4}$/.test(pasted)) {
-                        pinBoxes.forEach((inp, i) => { inp.disabled = false; inp.value = pasted[i]; });
-                        pinBoxes[3].focus(); updatePin();
-                    }
-                });
-            });
-
-            function updatePin() {
-                let pin = ''; pinBoxes.forEach(b => pin += b.value);
-                hiddenPinInput.value = pin;
-                confirmBtn.disabled = pin.length !== 4;
-            }
-
-            confirmBtn.addEventListener('click', function() {
-                const pin = hiddenPinInput.value;
-                confirmBtn.disabled = true;
-                pinLoader.classList.remove('d-none');
-                confirmPinText.textContent = 'Verifying...';
-                pinError.classList.add('d-none');
-
-                fetch("{{ route('verify.pin') }}", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json", "X-CSRF-TOKEN": "{{ csrf_token() }}" },
-                    body: JSON.stringify({ pin })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.valid) {
-                        document.getElementById('buySmeDataForm').submit();
-                    } else {
-                        pinErrorText.textContent = data.message || 'Incorrect PIN. Please try again.';
-                        pinError.classList.remove('d-none');
-                        confirmBtn.disabled = false;
-                        pinLoader.classList.add('d-none');
-                        confirmPinText.textContent = 'Confirm Purchase';
-                        pinBoxes.forEach((b, i) => { b.value = ''; b.disabled = i > 0; });
-                        hiddenPinInput.value = ''; pinBoxes[0].focus();
-                    }
-                })
-                .catch(err => {
-                    pinErrorText.textContent = 'Network error. Please try again.';
-                    pinError.classList.remove('d-none');
-                    confirmBtn.disabled = false;
-                    pinLoader.classList.add('d-none');
-                    confirmPinText.textContent = 'Confirm Purchase';
-                });
-            });
-        })();
-
-            </div>
         </div>
     </div>
+</div>
 @endsection
+
+@push('page-js')
+<script>
+$(document).ready(function () {
+    $("#service_id").change(function () {
+        let service_id = $(this).val();
+        if(!service_id) {
+            $("#type").empty().append("<option value=''>Data Type</option>");
+            $("#plan").empty().append("<option value=''>Select Plan</option>");
+            $("#amountToPay").val("");
+            return;
+        }
+        
+        $.ajax({
+            type: "get",
+            url: "{{ route('sme.fetch.type') }}",
+            data: { id: service_id },
+            dataType: "json",
+            success: function (response) {
+                var len = response.length;
+                $("#type").empty();
+                $("#type").append("<option value=''>Data Type</option>");
+
+                for (var i = 0; i < len; i++) {
+                    var plan_type = response[i]["plan_type"];
+                    $("#type").append("<option value='" + plan_type + "'>" + plan_type + "</option>");
+                }
+                $("#plan").empty().append("<option value=''>Select Plan</option>");
+                $("#amountToPay").val("");
+            },
+            error: function (data) {
+                console.error("Error fetching data types", data);
+            },
+        });
+    });
+
+    $("#type").change(function () {
+        let service_id = $("#service_id").val();
+        let type = $(this).val();
+        if(!service_id || !type) {
+            $("#plan").empty().append("<option value=''>Select Plan</option>");
+            $("#amountToPay").val("");
+            return;
+        }
+
+        $.ajax({
+            type: "get",
+            url: "{{ route('sme.fetch.plan') }}",
+            data: { id: service_id, type: type },
+            dataType: "json",
+            success: function (response) {
+                var len = response.length;
+                $("#plan").empty();
+                $("#plan").append("<option value=''>Data Plan</option>");
+
+                for (var i = 0; i < len; i++) {
+                    var plan_text = response[i]["size"] + " " + response[i]["plan_type"] + " (" + response[i]["amount"] + ") " + response[i]["validity"];
+                    var id = response[i]["data_id"];
+                    $("#plan").append("<option value='" + id + "'>" + plan_text + "</option>");
+                }
+                $("#amountToPay").val("");
+            },
+            error: function (data) {
+                console.error("Error fetching data plans", data);
+            },
+        });
+    });
+
+    $("#plan").change(function () {
+        let plan_id = $(this).val();
+        if(!plan_id) {
+            $("#amountToPay").val("");
+            return;
+        }
+
+        $.ajax({
+            type: "get",
+            url: "{{ route('sme.fetch.price') }}",
+            data: { id: plan_id },
+            dataType: "json",
+            success: function (response) {
+                $("#amountToPay").val("₦ " + response);
+            },
+            error: function (data) {
+                console.error("Error fetching price", data);
+            },
+        });
+    });
+
+    // PIN Confirmation Logic
+    const pinBoxes = document.querySelectorAll('.pin-digit-box');
+    const hiddenPinInput = document.getElementById('pinInput');
+    const pinError = document.getElementById('pinError');
+    const pinErrorText = document.getElementById('pinErrorText');
+    const pinLoader = document.getElementById('pinLoader');
+    const confirmPinText = document.getElementById('confirmPinText');
+    const confirmBtn = document.getElementById('confirmPinBtn');
+
+    // Proceed validation check
+    $("#proceedBtn").click(function() {
+        const serviceId = $("#service_id").val();
+        const type = $("#type").val();
+        const plan = $("#plan").val();
+        const mobileno = $("#mobileno").val();
+
+        if (!serviceId) {
+            alert("Please select a network.");
+            return;
+        }
+        if (!type) {
+            alert("Please select a data type.");
+            return;
+        }
+        if (!plan) {
+            alert("Please select a data plan.");
+            return;
+        }
+        if (!mobileno || mobileno.length !== 11 || isNaN(mobileno)) {
+            alert("Please enter a valid 11-digit phone number.");
+            return;
+        }
+
+        // Set modal transaction details
+        const selectedNetworkText = $("#service_id option:selected").text();
+        const selectedPlanTypeText = $("#type option:selected").text();
+        const selectedPlanText = $("#plan option:selected").text();
+        const amountVal = $("#amountToPay").val() || "₦ 0.00";
+
+        document.getElementById('modal-sme-desc').textContent = selectedNetworkText + " (" + selectedPlanTypeText + ") - " + selectedPlanText;
+        document.getElementById('modal-sme-amount').textContent = amountVal;
+
+        // Reset PIN fields
+        pinBoxes.forEach((box, i) => { box.value = ''; box.disabled = i > 0; });
+        hiddenPinInput.value = '';
+        pinError.classList.add('d-none');
+        confirmBtn.disabled = true;
+        confirmPinText.textContent = 'Confirm Purchase';
+        pinLoader.classList.add('d-none');
+
+        // Show Modal
+        const pinModal = new bootstrap.Modal(document.getElementById('pinModal'));
+        pinModal.show();
+        setTimeout(() => pinBoxes[0].focus(), 300);
+    });
+
+    pinBoxes.forEach((box, index) => {
+        box.addEventListener('input', function(e) {
+            if (!/^[0-9]$/.test(e.target.value)) { e.target.value = ''; return; }
+            if (index < pinBoxes.length - 1 && e.target.value) {
+                pinBoxes[index + 1].disabled = false; pinBoxes[index + 1].focus();
+            }
+            updatePin();
+        });
+        box.addEventListener('keydown', function(e) {
+            if (e.key === 'Backspace') {
+                if (box.value === '' && index > 0) {
+                    pinBoxes[index - 1].focus(); pinBoxes[index].disabled = true; pinBoxes[index - 1].value = '';
+                } else { box.value = ''; }
+                updatePin();
+            }
+        });
+        box.addEventListener('paste', function(e) {
+            e.preventDefault();
+            const pasted = e.clipboardData.getData('text').trim();
+            if (/^[0-9]{4}$/.test(pasted)) {
+                pinBoxes.forEach((inp, i) => { inp.disabled = false; inp.value = pasted[i]; });
+                pinBoxes[3].focus(); updatePin();
+            }
+        });
+    });
+
+    function updatePin() {
+        let pin = ''; pinBoxes.forEach(b => pin += b.value);
+        hiddenPinInput.value = pin;
+        confirmBtn.disabled = pin.length !== 4;
+    }
+
+    confirmBtn.addEventListener('click', function() {
+        const pin = hiddenPinInput.value;
+        confirmBtn.disabled = true;
+        pinLoader.classList.remove('d-none');
+        confirmPinText.textContent = 'Verifying...';
+        pinError.classList.add('d-none');
+
+        fetch("{{ route('verify.pin') }}", {
+            method: "POST",
+            headers: { "Content-Type": "application/json", "X-CSRF-TOKEN": "{{ csrf_token() }}" },
+            body: JSON.stringify({ pin })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.valid) {
+                document.getElementById('buySmeDataForm').submit();
+            } else {
+                pinErrorText.textContent = data.message || 'Incorrect PIN. Please try again.';
+                pinError.classList.remove('d-none');
+                confirmBtn.disabled = false;
+                pinLoader.classList.add('d-none');
+                confirmPinText.textContent = 'Confirm Purchase';
+                pinBoxes.forEach((b, i) => { b.value = ''; b.disabled = i > 0; });
+                hiddenPinInput.value = ''; pinBoxes[0].focus();
+            }
+        })
+        .catch(err => {
+            pinErrorText.textContent = 'Network error. Please try again.';
+            pinError.classList.remove('d-none');
+            confirmBtn.disabled = false;
+            pinLoader.classList.add('d-none');
+            confirmPinText.textContent = 'Confirm Purchase';
+        });
+    });
+});
+</script>
+@endpush
