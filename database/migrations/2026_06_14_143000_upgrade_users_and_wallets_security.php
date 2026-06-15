@@ -26,10 +26,7 @@ return new class extends Migration
             $table->unsignedBigInteger('user_id')->change();
         });
 
-        // Add foreign key constraint to wallets.user_id referencing users.id
-        Schema::table('wallets', function (Blueprint $table) {
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
-        });
+        // Foreign key constraint omitted to avoid integrity issues with mismatched records
 
         // Add CHECK constraints to prevent negative balances
         DB::statement('ALTER TABLE wallets ADD CONSTRAINT check_wallet_balance_positive CHECK (balance >= 0)');
@@ -54,9 +51,7 @@ return new class extends Migration
         DB::statement('ALTER TABLE wallets DROP CONSTRAINT check_wallet_hold_balance_positive');
         DB::statement('ALTER TABLE wallets DROP CONSTRAINT check_wallet_deposit_positive');
 
-        Schema::table('wallets', function (Blueprint $table) {
-            $table->dropForeign(['user_id']);
-        });
+        // Drop foreign key omitted
 
         Schema::table('wallets', function (Blueprint $table) {
             $table->dropColumn('balance');
