@@ -81,7 +81,7 @@ class CreateVerificationsTable extends Migration
             $table->string('nameOnCard')->nullable();
             $table->string('phoneNumber2')->nullable();
 
-            $table->foreignId('transaction_id')->constrained();
+            $table->unsignedBigInteger('transaction_id');
             $table->enum('status', ['pending', 'processing', 'successful', 'failed', 'resolved', 'rejected', 'query', 'remark'])->default('pending');
             $table->timestamp('submission_date')->useCurrent();
             $table->timestamps();
