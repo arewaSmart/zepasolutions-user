@@ -25,16 +25,6 @@ return new class extends Migration
         Schema::table('bvn_modifications', function (Blueprint $table) {
             $table->enum('status', ['pending', 'resolved', 'rejected', 'processing'])->change();
         });
-
-        // Add 'processing' to status enum in bvn_enrollments
-        Schema::table('bvn_enrollments', function (Blueprint $table) {
-            $table->enum('status', ['submitted', 'successful', 'rejected', 'processing'])->change();
-        });
-
-        // Add 'processing' to status enum in bvn_enrollments
-        Schema::table('account_upgrades', function (Blueprint $table) {
-            $table->enum('status', ['pending', 'resolved', 'rejected', 'processing'])->change();
-        });
     }
 
     /**
@@ -53,16 +43,6 @@ return new class extends Migration
 
         // Revert status enum to original in bvn_modifications
         Schema::table('bvn_modifications', function (Blueprint $table) {
-            $table->enum('status', ['pending', 'resolved', 'rejected'])->change();
-        });
-
-        // Revert status enum to original in bvn_enrollments
-        Schema::table('bvn_enrollments', function (Blueprint $table) {
-            $table->enum('status', ['submitted', 'successful', 'rejected'])->change();
-        });
-
-        // Add 'processing' to status enum in bvn_enrollments
-        Schema::table('account_upgrades', function (Blueprint $table) {
             $table->enum('status', ['pending', 'resolved', 'rejected'])->change();
         });
     }

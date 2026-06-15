@@ -64,6 +64,8 @@ class VirtualAccountRepository
                 curl_setopt($ch, CURLOPT_POST, true);
                 curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
                 curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+                curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+                curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
 
                 // Execute request
                 $response = curl_exec($ch);
@@ -88,16 +90,28 @@ class VirtualAccountRepository
                 // Check for success
                 if (isset($response['respCode']) && $response['respCode'] === '00000000') {
 
-                    $res = DB::table('virtual_accounts')->insert([
-                        'user_id' => $loginUserId,
-                        'accountReference' => $response['data']['accountReference'],
-                        'accountNo' => $response['data']['virtualAccountNo'],
-                        'accountName' => $response['data']['virtualAccountName'],
-                        'bankName' => 'PalmPay',
-                        'status' => '1',
-                        'created_at' => now(),
-                        'updated_at' => now(),
-                    ]);
+                    $exists = DB::table('virtual_accounts')->where('user_id', $loginUserId)->exists();
+                    if ($exists) {
+                        DB::table('virtual_accounts')->where('user_id', $loginUserId)->update([
+                            'accountReference' => $response['data']['accountReference'],
+                            'accountNo' => $response['data']['virtualAccountNo'],
+                            'accountName' => $response['data']['virtualAccountName'],
+                            'bankName' => 'PalmPay',
+                            'status' => '1',
+                            'updated_at' => now(),
+                        ]);
+                    } else {
+                        DB::table('virtual_accounts')->insert([
+                            'user_id' => $loginUserId,
+                            'accountReference' => $response['data']['accountReference'],
+                            'accountNo' => $response['data']['virtualAccountNo'],
+                            'accountName' => $response['data']['virtualAccountName'],
+                            'bankName' => 'PalmPay',
+                            'status' => '1',
+                            'created_at' => now(),
+                            'updated_at' => now(),
+                        ]);
+                    }
 
                     // Update user to indicate virtual account creation
                     User::where('id', $loginUserId)->update(['vwallet_is_created' => 1]);

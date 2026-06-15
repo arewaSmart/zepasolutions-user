@@ -64,9 +64,7 @@ class ProfileController extends Controller
     public function update(Request $request)
     {
         $request->validate([
-            'phone_number' => 'required|string|min:11',
-            'gender' => 'required|string',
-            'profile_pic' => 'nullable|image|mimes:jpeg,png,jpg|max:1028',
+            'profile_pic' => 'required|image|mimes:jpeg,png,jpg|max:1028',
         ]);
 
         $user = Auth::user();
@@ -76,11 +74,10 @@ class ProfileController extends Controller
             $image = $request->file('profile_pic');
             $base64Image = base64_encode(file_get_contents($image->getRealPath()));
             $user->profile_pic = $base64Image;
+            $user->save();
         }
 
-        $user->update($request->only('phone_number', 'gender', 'profile_pic'));
-
-        return redirect()->back()->with('message', 'Profile updated successfully.');
+        return redirect()->back()->with('message', 'Profile picture updated successfully.');
 
     }
 
@@ -95,25 +92,62 @@ class ProfileController extends Controller
         // Retrieve the user
         $user = User::find($this->loginUserId);
 
-        if (! $user) {
-
+        if (!$user) {
+            if ($request->wantsJson()) {
+                return response()->json(['success' => false, 'message' => 'User not found.'], 404);
+            }
             abort('404');
         }
 
         // Check the current password
-        if (! Hash::check($request->current_password, $user->password)) {
+        if (!Hash::check($request->current_password, $user->password)) {
+            if ($request->wantsJson()) {
+                return response()->json(['success' => false, 'message' => 'Current password is incorrect.'], 422);
+            }
             return redirect()->back()->with('error', 'Current password is incorrect.');
         }
 
         // Update the password
         $user->password = Hash::make($request->new_password);
+        $user->password_updated_at = now();
 
         // Save the user
         if ($user->save()) {
+            if ($request->wantsJson()) {
+                return response()->json(['success' => true, 'message' => 'Password updated successfully.']);
+            }
             return redirect()->back()->with('status', 'Password updated successfully.');
         } else {
+            if ($request->wantsJson()) {
+                return response()->json(['success' => false, 'message' => 'Failed to update password.'], 500);
+            }
             return redirect()->back()->with('error', 'Failed to update password.');
         }
+    }
+
+    public function createPin(Request $request)
+    {
+        $request->validate([
+            'password' => 'required|string',
+            'pin' => 'required|numeric|digits:4|confirmed',
+        ]);
+
+        $user = User::find(Auth::id() ?: $this->loginUserId);
+
+        if (!$user) {
+            return response()->json(['success' => false, 'message' => 'User not found.'], 404);
+        }
+
+        // Verify password
+        if (!Hash::check($request->password, $user->password)) {
+            return response()->json(['success' => false, 'message' => 'Incorrect account password.'], 422);
+        }
+
+        // Save new PIN
+        $user->pin = bcrypt($request->pin);
+        $user->save();
+
+        return response()->json(['success' => true, 'message' => 'Transaction PIN created successfully!']);
     }
 
     /**
@@ -239,77 +273,70 @@ class ProfileController extends Controller
 
             $loginUserId = Auth::id();
             // Services Fee
-            $ServiceFee = 0;
-            $ServiceFee = Services::where('service_code', '105')->first();
-            $ServiceFee = $ServiceFee->amount;
-
-            // Notification Count
-            $count = 0;
-            $count = Upgrade::where('user_id', $loginUserId)->count();
-
-            if ($count > 0) {
-                return response()->json([
-                    'message' => 'Error',
-                    'errors' => ['Account Upgrade' => 'We are reviewing your request. will get back to you. if your request is not successfull you will be refunded'],
-                ], 422);
-            }
+            $ServiceFee = Services::where('service_code', '105')->first()->amount;
 
             // Check if wallet is funded
-            $wallet = Wallet::where('user_id', $loginUserId)->first();
-            $wallet_balance = $wallet->balance;
-            $balance = 0;
+            try {
+                \Illuminate\Support\Facades\DB::transaction(function() use ($loginUserId, $ServiceFee) {
+                    $wallet = Wallet::where('user_id', $loginUserId)->lockForUpdate()->first();
+                    if (!$wallet) {
+                        throw new \Exception('Wallet not found.');
+                    }
 
-            if ($wallet_balance < $ServiceFee) {
-                return response()->json([
-                    'message' => 'Error',
-                    'errors' => ['Wallet Error' => 'Sorry Wallet Not Sufficient for Transaction !'],
-                ], 422);
-            } else {
-                $balance = $wallet->balance - $ServiceFee;
+                    // Re-check count inside transaction to prevent concurrent duplicate requests
+                    $count = Upgrade::where('user_id', $loginUserId)->count();
+                    if ($count > 0) {
+                        throw new \Exception('We are reviewing your request. will get back to you. if your request is not successfull you will be refunded');
+                    }
 
-                $affected = Wallet::where('user_id', $loginUserId)
-                    ->update(['balance' => $balance]);
+                    if ($wallet->balance < $ServiceFee) {
+                        throw new \Exception('Sorry Wallet Not Sufficient for Transaction !');
+                    }
 
-                $referenceno = '';
-                srand((float) microtime() * 1000000);
-                $data = '123456123456789071234567890890';
-                $data .= 'aBCdefghijklmn123opq45rs67tuv89wxyz'; // if you need alphabatic also
-                $ddesc = '';
-                for ($i = 0; $i < 12; $i++) {
-                    $referenceno .= substr($data, (rand() % (strlen($data))), 1);
-                }
+                    // Deduct balance
+                    $wallet->decrement('balance', $ServiceFee);
 
-                $payer_name = auth()->user()->first_name.' '.Auth::user()->last_name;
-                $payer_email = auth()->user()->email;
-                $payer_phone = auth()->user()->phone_number;
+                    $referenceno = '';
+                    srand((float) microtime() * 1000000);
+                    $data = '123456123456789071234567890890';
+                    $data .= 'aBCdefghijklmn123opq45rs67tuv89wxyz';
+                    for ($i = 0; $i < 12; $i++) {
+                        $referenceno .= substr($data, (rand() % (strlen($data))), 1);
+                    }
 
-                $transaction = Transaction::create([
-                    'user_id' => $loginUserId,
-                    'payer_name' => $payer_name,
-                    'payer_email' => $payer_email,
-                    'payer_phone' => $payer_phone,
-                    'referenceId' => $referenceno,
-                    'service_type' => 'Account Update Request',
-                    'service_description' => 'Wallet debitted with Upgrade Fee of ₦'.number_format($ServiceFee, 2),
-                    'amount' => $ServiceFee,
-                    'gateway' => 'Wallet',
-                    'status' => 'Pending',
-                ]);
+                    $payer_name = auth()->user()->first_name.' '.Auth::user()->last_name;
+                    $payer_email = auth()->user()->email;
+                    $payer_phone = auth()->user()->phone_number;
 
-                $txnId = $transaction->id;
-                $refno = $transaction->referenceId;
-                // Submit the request
+                    $transaction = Transaction::create([
+                        'user_id' => $loginUserId,
+                        'payer_name' => $payer_name,
+                        'payer_email' => $payer_email,
+                        'payer_phone' => $payer_phone,
+                        'referenceId' => $referenceno,
+                        'service_type' => 'Account Upgrade Request',
+                        'service_description' => 'Wallet debitted with Upgrade Fee of ₦'.number_format($ServiceFee, 2),
+                        'amount' => $ServiceFee,
+                        'gateway' => 'Wallet',
+                        'status' => 'Pending',
+                    ]);
 
-                Upgrade::create([
-                    'user_id' => $loginUserId,
-                    'user_name' => $payer_name,
-                    'tnx_id' => $txnId,
-                    'refno' => $refno,
-                    'type' => 'Agent Upgrade',
-                    'status' => 'Pending',
-                ]);
+                    Upgrade::create([
+                        'user_id' => $loginUserId,
+                        'user_name' => $payer_name,
+                        'tnx_id' => $transaction->id,
+                        'refno' => $transaction->referenceId,
+                        'type' => 'Agent Upgrade',
+                        'status' => 'Pending',
+                    ]);
+                });
 
                 return response()->json(['status' => 200, 'msg' => 'Upgrade Request Submitted']);
+            } catch (\Exception $e) {
+                return response()->json([
+                    'message' => 'Error',
+                    'errors' => ['Wallet Error' => $e->getMessage()],
+                ], 422);
             }
         }
     }

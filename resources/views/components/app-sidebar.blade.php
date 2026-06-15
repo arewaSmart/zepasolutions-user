@@ -14,7 +14,7 @@
         <nav class="main-menu-container nav nav-pills flex-column sub-open">
             <div class="slide-left" id="slide-left">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="#7b8191" width="24" height="24"
-                    viewBox="0 0 24 24">
+                     viewBox="0 0 24 24">
                     <path d="M13.293 6.293 7.586 12l5.707 5.707 1.414-1.414L10.414 12l4.293-4.293z"></path>
                 </svg>
             </div>
@@ -30,9 +30,9 @@
                     </a>
                 </li>
                 <li
-                    class="slide has-sub {{ request()->is('funding') || request()->is('p2p') || request()->is('claim') || request()->is('transfer') ? 'open' : '' }}">
+                    class="slide has-sub {{ request()->is('funding') || request()->is('p2p') || request()->is('claim') ? 'open' : '' }}">
                     <a href="javascript:void(0);"
-                        class="side-menu__item {{ request()->is('funding') || request()->is('p2p') || request()->is('claim') || request()->is('transfer') ? 'active' : '' }}">
+                        class="side-menu__item {{ request()->is('funding') || request()->is('p2p') || request()->is('claim') ? 'active' : '' }}">
                         <i class="bx bx-wallet side-menu__icon"></i> <box-icon type='solid' name='wallet'></box-icon>
                         <span class="side-menu__label">Wallet</span>
                         <i class="fe fe-chevron-right side-menu__angle"></i>
@@ -53,206 +53,126 @@
                                 class="side-menu__item {{ request()->is('claim') ? 'active' : '' }}">Claim Bonus
                             </a>
                         </li>
-                        {{-- <li class="slide">
-                            <a href="{{ route('transfer') }}"
-                                class="side-menu__item {{ request()->is('transfer') ? 'active' : '' }}">Transfer</a>
-                        </li> --}}
                     </ul>
                 </li>
                 <!-- End::slide -->
                 <!-- Start::slide -->
                 <li
-                    class="slide has-sub {{ request()->is('nin') || request()->is('nin2') || request()->is('nin-phone') || request()->is('bvn') || request()->is('bvn2') || request()->is('nin-track') || request()->is('nin-demographic') ? 'open' : '' }}">
+                    class="slide has-sub {{ request()->is('nin-verification*') || request()->is('nin-phone-verification*') || request()->is('bvn-verification*') || request()->is('bvn2') || request()->is('nin-demo-verification*') ? 'open' : '' }}">
                     <a href="javascript:void(0);"
-                        class="side-menu__item {{ request()->is('nin') || request()->is('nin2') || request()->is('nin-phone') || request()->is('bvn') || request()->is('bvn2') || request()->is('nin-track')|| request()->is('nin-demographic') ? 'active' : '' }}">
+                        class="side-menu__item {{ request()->is('nin-verification*') || request()->is('nin-phone-verification*') || request()->is('bvn-verification*') || request()->is('bvn2') || request()->is('nin-demo-verification*') ? 'active' : '' }}">
                         <i class="bx bx-fingerprint side-menu__icon"></i>
-                        <span class="side-menu__label">Identity</span>
+                        <span class="side-menu__label">Verification</span>
                         <i class="fe fe-chevron-right side-menu__angle"></i>
                     </a>
                     <ul class="slide-menu child1">
-                        <li
-                            class="slide has-sub {{ request()->is('nin') || request()->is('nin-phone') || request()->is('nin-track') || request()->is('nin-demographic') ? 'open' : '' }}">
-                            <a href="javascript:void(0);"
-                                class="side-menu__item {{ request()->is('nin') || request()->is('nin-phone') || request()->is('nin-track') || request()->is('nin-demographic') ? 'active' : '' }}">
-                                NIN
-                                Verification <i class="fe fe-chevron-right side-menu__angle"></i></a>
-                            <ul class="slide-menu child2">
-                                <li class="slide">
-                                    <a href="{{ route('nin') }}"
-                                        class="side-menu__item {{ request()->is('nin') ? 'active' : '' }}"> Verify
-                                        NIN using NIN</a>
-                                </li>
-                                <li class="slide">
-                                    <a href="{{ route('nin-phone') }}"
-                                        class="side-menu__item {{ request()->is('nin-phone') ? 'active' : '' }}">Verify
-                                        NIN using Phone No
-                                    </a>
-                                </li>
-                                <li class="slide">
-                                    <a href="{{ route('nin-track') }}"
-                                        class="side-menu__item {{ request()->is('nin-track') ? 'active' : '' }}">Verify
-                                        NIN using Tracking No
-                                    </a>
-                                </li>
-                                <li class="slide">
-                                    <a href="{{ route('nin-demo') }}"
-                                        class="side-menu__item {{ request()->is('nin-demographic') ? 'active' : '' }}">Verify
-                                        NIN using Demographic
-                                    </a>
-                                </li>
-                            </ul>
+                        <li class="slide">
+                            <a href="{{ route('nin.verification.index') }}"
+                                class="side-menu__item {{ request()->is('nin-verification') ? 'active' : '' }}">Verify NIN (NIN)</a>
                         </li>
-                        <li class="slide has-sub {{ request()->is('nin2') ? 'open' : '' }}">
-                            <a href="javascript:void(0);"
-                                class="side-menu__item {{ request()->is('nin2') ? 'active' : '' }}">
-                                NIN
-                                Verification V2 <i class="fe fe-chevron-right side-menu__angle"></i></a>
-                            <ul class="slide-menu child2">
-                                <li class="slide">
-                                    <a href="{{ route('nin2') }}"
-                                        class="side-menu__item {{ request()->is('nin2') ? 'active' : '' }}"> Verify
-                                        NIN using NIN</a>
-                                </li>
-                            </ul>
+                        <li class="slide">
+                            <a href="{{ route('nin.phone.index') }}"
+                                class="side-menu__item {{ request()->is('nin-phone-verification') ? 'active' : '' }}">Verify NIN (Phone No)</a>
                         </li>
-                        <li class="slide has-sub {{ request()->is('bvn') ? 'open' : '' }}">
-                            <a href="javascript:void(0);"
-                                class="side-menu__item {{ request()->is('bvn') ? 'active' : '' }}">BVN Verification
-                                <i class="fe fe-chevron-right side-menu__angle"></i></a>
-                            <ul class="slide-menu child2">
-                                <li class="slide">
-                                    <a href="{{ route('bvn') }}"
-                                        class="side-menu__item {{ request()->is('bvn') ? 'active' : '' }}">Verify
-                                        BVN</a>
-                                </li>
-                            </ul>
+                        <li class="slide">
+                            <a href="{{ route('nin.demo.index') }}"
+                                class="side-menu__item {{ request()->is('nin-demo-verification') ? 'active' : '' }}">Verify NIN (Demographics)</a>
                         </li>
-                        <li class="slide has-sub {{ request()->is('bvn2') ? 'open' : '' }}">
-                            <a href="javascript:void(0);"
-                                class="side-menu__item {{ request()->is('bvn') ? 'active' : '' }}">BVN Verification V2
-                                <i class="fe fe-chevron-right side-menu__angle"></i></a>
-                            <ul class="slide-menu child2">
-                                <li class="slide">
-                                    <a href="{{ route('bvn2') }}"
-                                        class="side-menu__item {{ request()->is('bvn2') ? 'active' : '' }}">Verify
-                                        BVN</a>
-                                </li>
-                            </ul>
+                        <li class="slide">
+                            <a href="{{ route('bvn.verification.index') }}"
+                                class="side-menu__item {{ request()->is('bvn-verification') ? 'active' : '' }}">Verify BVN</a>
                         </li>
                     </ul>
                 </li>
                 <!-- End::slide -->
                 <!-- Start::slide -->
-                <li
-                    class="slide has-sub {{ request()->is('airtime') || request()->is('data') || request()->is('sme-data') || request()->is('tv') ? 'open' : '' }}">
-                    <a href="javascript:void(0);"
-                        class="side-menu__item {{ request()->is('airtime') || request()->is('data') || request()->is('sme-data') || request()->is('tv') ? 'active' : '' }}">
-                        <i class="bx bx-task side-menu__icon"></i>
-                        <span class="side-menu__label">Utilities</span>
-                        <i class="fe fe-chevron-right side-menu__angle"></i>
+                <li class="slide">
+                    <a href="{{ route('airtime') }}"
+                        class="side-menu__item {{ request()->is('airtime*') ? 'active' : '' }}">
+                        <i class="bx bx-phone-call side-menu__icon"></i>
+                        <span class="side-menu__label">Airtime</span>
                     </a>
-                    <ul class="slide-menu child1">
-                        <li class="slide">
-                            <a href="{{ route('airtime') }}"
-                                class="side-menu__item {{ request()->is('airtime') ? 'active' : '' }}">Airtime</a>
-                        </li>
-                        <li class="slide">
-                            <a href="{{ route('data') }}"
-                                class="side-menu__item {{ request()->is('data') ? 'active' : '' }}">Data
-                                Bundle</a>
-                        </li>
-                        <li class="slide">
-
-                        {{-- <li
-                            class="slide has-sub {{ request()->is('data') || request()->is('sme-data') ? 'open' : '' }}">
-                            <a href="javascript:void(0);"
-                                class="side-menu__item {{ request()->is('data') || request()->is('sme-data') ? 'active' : '' }}">
-                                Data Top-up<i class="fe fe-chevron-right side-menu__angle"></i></a>
-                            <ul class="slide-menu child2">
-                               
-                                <li class="slide">
-                                    <a href="{{ route('sme-data') }}"
-                                        class="side-menu__item {{ request()->is('sme-data') ? 'active' : '' }}">SME
-                                        Data Bundle</a>
-                                </li>
-                            </ul>
-                        </li> --}}
-
-                        <li class="slide">
-                            <a href="#" onclick="return confirm('Comming soon!');"
-                                class="side-menu__item {{ request()->is('tv') }}">TV
-                                Subscriptions
-                            </a>
-                        </li>
-                        <li class="slide">
-                            <a href="#" onclick="return confirm('Comming Soon')"
-                                class="side-menu__item">Electric Bills
-                            </a>
-                        </li>
-                    </ul>
                 </li>
                 <li class="slide">
-                    <a href="#" onclick="return confirm('Comming Soon !');"
-                        class="side-menu__item {{ request()->is('education') ? 'active' : '' }}">
+                    <a href="{{ route('buy-data') }}"
+                        class="side-menu__item {{ request()->is('data*') ? 'active' : '' }}">
+                        <i class="bx bx-wifi side-menu__icon"></i>
+                        <span class="side-menu__label">Data Bundle</span>
+                    </a>
+                </li>
+                <li class="slide">
+                    <a href="{{ route('buy-sme-data') }}"
+                        class="side-menu__item {{ request()->is('sme-data*') ? 'active' : '' }}">
+                        <i class="bx bx-data side-menu__icon"></i>
+                        <span class="side-menu__label">SME Data Bundle</span>
+                    </a>
+                </li>
+                <li class="slide">
+                    <a href="{{ route('cable') }}"
+                        class="side-menu__item {{ request()->is('cable*') ? 'active' : '' }}">
+                        <i class="bx bx-tv side-menu__icon"></i>
+                        <span class="side-menu__label">TV Subscriptions</span>
+                    </a>
+                </li>
+                <li class="slide">
+                    <a href="{{ route('electricity') }}"
+                        class="side-menu__item {{ request()->is('electricity*') ? 'active' : '' }}">
+                        <i class="bx bx-bulb side-menu__icon"></i>
+                        <span class="side-menu__label">Electric Bills</span>
+                    </a>
+                </li>
+                <li class="slide">
+                    <a href="{{ route('education') }}"
+                        class="side-menu__item {{ request()->is('education*') ? 'active' : '' }}">
                         <i class="bx bx-user-pin side-menu__icon"></i>
                         <span class="side-menu__label">Educational Pin</span>
                     </a>
                 </li>
+                <!-- Start::slide -->
+                <li class="slide">
+                    <a href="{{ route('nin-modification') }}"
+                        class="side-menu__item {{ request()->is('nin-modification*') ? 'active' : '' }}">
+                        <i class="bx bx-id-card side-menu__icon"></i>
+                        <span class="side-menu__label">NIN Modification</span>
+                    </a>
                 </li>
                 <!-- Start::slide -->
-                @if (Auth::user()->role == 'agent')
-                    <li
-                        class="slide has-sub {{ request()->is('bvn-modification') || request()->is('crm') || request()->is('account-upgrade') || request()->is('crm2') || request()->is('bvn-enrollment') || request()->is('nin-services') || request()->is('vnin-to-nibss') ? 'open' : '' }}">
-                        <a href="javascript:void(0);"
-                            class="side-menu__item {{ request()->is('bvn-modification') || request()->is('crm') || request()->is('account-upgrade') || request()->is('crm2') || request()->is('bvn-enrollment') || request()->is('nin-services') || request()->is('vnin-to-nibss') ? 'active' : '' }}">
-                            <i class="bx bx-user-plus side-menu__icon"></i>
-                            <span class="side-menu__label">Agent Services </span>
-                            <i class="fe fe-chevron-right side-menu__angle"></i>
-                        </a>
-                        <ul class="slide-menu child1">
+                <li class="slide">
+                    <a href="{{ route('nin-validation.index') }}"
+                        class="side-menu__item {{ request()->is('nin-validation*') ? 'active' : '' }}">
+                        <i class="bx bx-shield-quarter side-menu__icon"></i>
+                        <span class="side-menu__label">NIN Validation</span>
+                    </a>
+                </li>
 
-                            <li class="slide">
-                                <a href="{{ route('nin-services') }}"
-                                    class="side-menu__item  {{ request()->is('nin-services') ? 'active' : '' }}">NIN
-                                    Services </a>
-                            </li>
-                            <li class="slide">
-                                <a href="{{ route('vnin-to-nibss') }}"
-                                    class="side-menu__item {{ request()->is('vnin-to-nibss') ? 'active' : '' }}">VNIN
-                                    to
-                                    NIBSS </a>
-                            </li>
-                            <li class="slide">
-                                <a href="{{ route('bvn-modification') }}"
-                                    class="side-menu__item {{ request()->is('bvn-modification') ? 'active' : '' }}">BVN
-                                    Modification </a>
-                            </li>
-                            <li class="slide">
-                                <a href="{{ route('crm') }}"
-                                    class="side-menu__item {{ request()->is('crm') ? 'active' : '' }}">CRM</a>
-                            </li>
-                            <li class="slide">
-                                <a href="{{ route('account-upgrade') }}"
-                                    class="side-menu__item {{ request()->is('account-upgrade') ? 'active' : '' }}">Account
-                                    Upgrade
-                                </a>
-                            </li>
-                            <li class="slide">
-                                <a href="{{ route('crm2') }}"
-                                    class="side-menu__item {{ request()->is('crm2') ? 'active' : '' }}">Find
-                                    BVN
-                                    using Phone and DOB
-                                </a>
-                            </li>
-                            <li class="slide">
-                                <a href="{{ route('bvn-enrollment') }}"
-                                    class="side-menu__item {{ request()->is('bvn-enrollment') ? 'active' : '' }}">BVN
-                                    Enrollement Agency Request
-                                </a>
-                            </li>
-                        </ul>
-                    </li>
-                @endif
+                <li class="slide">
+                    <a href="{{ route('ipe.index') }}"
+                        class="side-menu__item {{ request()->is('ipe*') ? 'active' : '' }}">
+                        <i class="bx bx-list-check side-menu__icon"></i>
+                        <span class="side-menu__label">IPE Clearance</span>
+                    </a>
+                </li>
+                <li class="slide">
+                    <a href="{{ route('bvn-modification') }}"
+                        class="side-menu__item {{ request()->is('bvn-modification*') ? 'active' : '' }}">
+                        <i class="bx bx-edit side-menu__icon"></i>
+                        <span class="side-menu__label">BVN Modification</span>
+                    </a>
+                </li>
+                <li class="slide">
+                    <a href="{{ route('crm') }}"
+                        class="side-menu__item {{ request()->is('crm') ? 'active' : '' }}">
+                        <i class="bx bx-support side-menu__icon"></i>
+                        <span class="side-menu__label">CRM</span>
+                    </a>
+                </li>
+                <li class="slide">
+                    <a href="{{ route('phone.search.index') }}"
+                        class="side-menu__item {{ request()->is('phone-search*') ? 'active' : '' }}">
+                        <i class="bx bx-search-alt side-menu__icon"></i>
+                        <span class="side-menu__label">BVN Search by Phone</span>
+                    </a>
+                </li>
 
                 <li class="slide">
                     <a href="{{ route('transactions') }}"
@@ -264,10 +184,10 @@
 
 
                 <li class="slide">
-                    <a href="{{ route('support') }}" target="_blank"
+                    <a href="{{ route('support') }}"
                         class="side-menu__item {{ request()->is('support') ? 'active' : '' }}">
                         <i class="bx bx-headphone side-menu__icon"></i>
-                        <span class="side-menu__label">Support</span>
+                        <span class="side-menu__label">Contact Support</span>
                     </a>
                 </li>
 

@@ -141,8 +141,7 @@
                          </a>
                      </li>
                      <li>
-                         <a class="dropdown-item d-flex align-items-center" href="{{ route('support') }}"
-                             target="_blank">
+                         <a class="dropdown-item d-flex align-items-center" href="{{ route('support') }}">
                              <i class="ti ti-headset fs-18 me-2 op-7"></i>
                              <span>Support</span>
                          </a>

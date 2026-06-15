@@ -74,7 +74,7 @@
       <div class="col-md-9">
         <div class="row">
           <div class="col-md-4">
-            <img src="data:image/;base64,{{$veridiedRecord->photo}}" alt="Logo" width="280px" height="378">
+            <img src="data:image/;base64,{{$veridiedRecord->photo_path}}" alt="Logo" width="280px" height="378">
           </div>
           <div class="col-md-8">
             <table class="small-table" width="100%">
@@ -90,23 +90,23 @@
                 </tr>
                 <tr>
                   <td width="35%">NIN</td>
-                  <td> {{$veridiedRecord->nin}}</td>
+                  <td> {{$veridiedRecord->number_nin}}</td>
                 </tr>
                 <tr>
                   <td width="35%">First Name</td>
-                  <td id="name1">{{$veridiedRecord->first_name}}</td>
+                  <td id="name1">{{$veridiedRecord->firstname}}</td>
                 </tr>
                 <tr>
                   <td width="35%">Last Name</td>
-                  <td id="name2">{{$veridiedRecord->last_name}}</td>
+                  <td id="name2">{{$veridiedRecord->surname}}</td>
                 </tr>
                 <tr>
                   <td width="35%">Middle Name</td>
-                  <td>{{$veridiedRecord->middle_name}}</td>
+                  <td>{{$veridiedRecord->middlename}}</td>
                 </tr>
                 <tr>
                   <td width="35%">Phone</td>
-                  <td>{{$veridiedRecord->phoneno}}</td>
+                  <td>{{$veridiedRecord->telephoneno}}</td>
                 </tr>
                 <tr>
                   <td width="35%">Email</td>
@@ -114,7 +114,7 @@
                 </tr>
                 <tr>
                   <td width="35%">Date of Birth</td>
-                  <td>{{date("d-M-Y", strtotime($veridiedRecord->dob))}}</td>
+                  <td>{{date("d-M-Y", strtotime($veridiedRecord->birthdate))}}</td>
                 </tr>
                 <tr>
                   <td width="35%">Gender</td>
@@ -122,20 +122,59 @@
                 </tr>
                 <tr>
                   <td width="35%">Enrollment Bank</td>
-                  <td>{{$veridiedRecord->enrollment_bank}}</td>
+                  <td>{{$veridiedRecord->enrollmentBank ?? 'N/A'}}</td>
                 </tr>
                 <tr>
                   <td width="35%">Enrollment Branch</td>
-                  <td>{{$veridiedRecord->enrollment_branch}}</td>
+                  <td>{{$veridiedRecord->enrollmentBranch ?? 'N/A'}}</td>
                 </tr>
                 <tr>
                   <td width="35%">Registration Date</td>
-                  <td></td>
+                  <td>{{$veridiedRecord->registrationDate ?? 'N/A'}}</td>
                 </tr>
                 <tr>
-                  <td>Address</td>
-                  <td></td>
-
+                  <td width="35%">Residential Address</td>
+                  <td>{{$veridiedRecord->residence_address ?? 'N/A'}}</td>
+                </tr>
+                <tr>
+                  <td width="35%">State of Origin</td>
+                  <td>{{$veridiedRecord->self_origin_state ?? 'N/A'}}</td>
+                </tr>
+                <tr>
+                  <td width="35%">LGA of Origin</td>
+                  <td>{{$veridiedRecord->self_origin_lga ?? 'N/A'}}</td>
+                </tr>
+                <tr>
+                  <td width="35%">Marital Status</td>
+                  <td>{{$veridiedRecord->maritalstatus ?? 'N/A'}}</td>
+                </tr>
+                <tr>
+                  <td width="35%">Watch Listed</td>
+                  <td>{{$veridiedRecord->watchListed ?? 'N/A'}}</td>
+                </tr>
+                <tr>
+                  <td width="35%">Level of Account</td>
+                  <td>{{$veridiedRecord->levelOfAccount ?? 'N/A'}}</td>
+                </tr>
+                <tr>
+                  <td width="35%">State of Residence</td>
+                  <td>{{$veridiedRecord->residence_state ?? 'N/A'}}</td>
+                </tr>
+                <tr>
+                  <td width="35%">LGA of Residence</td>
+                  <td>{{$veridiedRecord->residence_lga ?? 'N/A'}}</td>
+                </tr>
+                <tr>
+                  <td width="35%">Nationality</td>
+                  <td>{{$veridiedRecord->nationality ?? 'N/A'}}</td>
+                </tr>
+                <tr>
+                  <td width="35%">Name on Card</td>
+                  <td>{{$veridiedRecord->nameOnCard ?? 'N/A'}}</td>
+                </tr>
+                <tr>
+                  <td width="35%">Phone Number 2</td>
+                  <td>{{$veridiedRecord->phoneNumber2 ?? 'N/A'}}</td>
                 </tr>
               </tbody>
             </table>
@@ -153,10 +192,10 @@
   <script>
     window.onload = function () {
     const { jsPDF } = window.jspdf;
-    
+
     var names = document.getElementById("name1").innerHTML+" "+document.getElementById("name2").innerHTML;
-    
-    
+
+
     html2canvas(document.getElementById('content'), {
         dpi: 300, // Set to 300 DPI
         scale: 2, // Adjusts the scale of the screenshot
@@ -165,34 +204,34 @@
     }).then(canvas => {
         const imgData = canvas.toDataURL('image/png');
         const pdf = new jsPDF('p', 'mm', 'a4');
-    
+
         // Determine screen size
         const isSmallScreen = window.innerWidth < 768; // Example breakpoint for small screens
-    
+
         // PDF dimensions
         const pageWidth = pdf.internal.pageSize.getWidth();
         const pageHeight = pdf.internal.pageSize.getHeight();
-        
+
         let imgWidth = isSmallScreen ? pageWidth - 20 : 250; // Smaller width for small screens
         let imgHeight = (canvas.height * imgWidth) / canvas.width;
-    
+
         if (imgHeight > pageHeight) {
             imgHeight = pageHeight - 20; // Adjust height if necessary
             imgWidth = (canvas.width * imgHeight) / canvas.height;
         }
-    
+
         // Center the image horizontally for small screens
         const xOffset = isSmallScreen ? (pageWidth - imgWidth) / 2 : 10;
-    
+
         // Add image to PDF
         pdf.addImage(imgData, 'PNG', xOffset, 10, imgWidth, imgHeight, '', 'FAST');
-    
+
         // For small screens, ensure it fits on one page
         if (isSmallScreen) {
             pdf.save(names + ' - Standard Slip.pdf');
         } else {
             let heightLeft = imgHeight;
-    
+
             while (heightLeft >= 0) {
                 if (heightLeft - imgHeight < 0) {
                     pdf.addImage(imgData, 'PNG', 10, 10, imgWidth, imgHeight, '', 'FAST');
@@ -202,9 +241,9 @@
                 }
                 heightLeft -= pageHeight;
             }
-    
+
             pdf.save(names + ' - Standard Slip.pdf');
-        } 
+        }
     });
     };
   </script>

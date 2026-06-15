@@ -15,5 +15,8 @@ class DatabaseSeeder extends Seeder
     {
         //  User::factory(10)->create();
         $this->call(BonusSeeder::class);
+        $this->call(VerificationSeeder::class);
+        $this->call(NinservicesSeeder::class);
+        $this->call(BvnSeeder::class);
     }
 }

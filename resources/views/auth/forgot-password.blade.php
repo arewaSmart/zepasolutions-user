@@ -1,18 +1,13 @@
 @extends('layouts.auth')
 @section('title', 'Forget Password')
 @section('content')
-    <div class="container-lg">
-        <div class="row justify-content-center align-items-center authentication authentication-basic h-100">
-            <div class="col-xxl-4 col-xl-5 col-lg-5 col-md-6 col-sm-8 col-12">
-                <div class="card custom-card">
+    <div class="card custom-card">
                     <div class="card-body p-5">
 
-                        <div class="my-2 d-flex justify-content-center">
+                        <div class="my-2 d-flex justify-content-center d-lg-none">
                             <a href="{{ route('login') }}">
                                 <img src="{{ asset('assets/images/brand-logos/logo.png') }}" alt="logo"
                                     class="desktop-logo" style="width:60px; height:55px">
-                                <img src="{{ asset('assets/images/brand-logos/logo-dark.jpg') }}" alt="logo"
-                                    class="desktop-dark" style="width:60px; height:55px">
                             </a>
                         </div>
                         <p class="mb-4 text-muted op-7 fw-normal text-center"> Forgot your password? No problem. Just let us
@@ -53,9 +48,6 @@
                         </form>
                     </div>
                 </div>
-            </div>
-        </div>
-    </div>
 @endsection
 
 @push('page-js')

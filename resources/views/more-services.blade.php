@@ -38,7 +38,7 @@
                                             <div class="row ">
                                                 @if ($type == 'data')
                                                     <div class="col-6 col-md-3 text-center  mt-2">
-                                                        <a href="{{ route('data') }}"><img class="img-fluid border rounded"
+                                                        <a href="{{ route('buy-data') }}"><img class="img-fluid border rounded"
                                                                 width="30%"
                                                                 src="{{ asset('assets/images/data-bundle.jpeg') }}">
                                                             <p class=" rounded fw-bold mt-2">Data Bundle</p>
@@ -46,73 +46,56 @@
                                                     </div>
 
                                                     <div class="col-6 col-md-3 text-center  mt-2">
-                                                        <a href="{{ route('sme-data') }}"><img
+                                                        <a href="{{ route('buy-sme-data') }}"><img
                                                                 class="img-fluid border rounded" width="32%"
                                                                 src="{{ asset('assets/images/sme.png') }}">
                                                             <p class=" rounded fw-bold mt-2">SME Data Bundle</p>
                                                         </a>
                                                     </div>
                                                 @elseif ($type == 'verifications')
-                                                    <div class="col-6 col-md-3 text-center  mt-2">
-                                                        <a href="{{ route('bvn') }}"> <img class="img-fluid  rounded"
-                                                                width="40%" src="{{ asset('assets/images/BVN.jpeg') }}">
-                                                            <p class=" rounded fw-bold mt-2 ">BVN Verification</p>
-                                                        </a>
-                                                    </div>
-                                                    <div class="col-6 col-md-3 text-center  mt-2">
-                                                        <a href="{{ route('bvn2') }}"> <img class="img-fluid  rounded"
-                                                                width="40%" src="{{ asset('assets/images/BVN.jpeg') }}">
-                                                            <p class=" rounded fw-bold mt-2 ">BVN Verification V2</p>
-                                                        </a>
-                                                    </div>
-
-                                                    <!-- <div class="col-6 col-md-3 text-center  mt-2">
-                              <a href="{{ route('bank') }}"> <img class="img-fluid  rounded" width="32%" src="{{ asset('assets/images/identity.png') }}">
-                                <p class=" rounded fw-bold mt-2">Verify Bank Account</p>
-                              </a>
-                            </div>-->
-
-                                                    <div class="col-6 col-md-3 text-center  mt-2">
-                                                        <a href="{{ route('nin') }}"> <img class="img-fluid  rounded"
-                                                                width="40%" src="{{ asset('assets/images/nimc.png') }}">
-                                                            <p class=" rounded fw-bold mt-2">Verify NIN </p>
-                                                        </a>
-                                                    </div>
-
-                                                    <div class="col-6 col-md-3 text-center  mt-2">
-                                                        <a href="{{ route('nin2') }}"> <img class="img-fluid  rounded"
-                                                                width="40%" src="{{ asset('assets/images/nimc.png') }}">
-                                                            <p class="mt-2 fw-bold ">Verify NIN V2</p>
-                                                        </a>
-                                                    </div>
-
-                                                    <div class="col-6 col-md-3 text-center  mt-2">
-                                                        <a href="{{ route('nin-phone') }}"> <img class="img-fluid  rounded"
-                                                                width="40%" src="{{ asset('assets/images/nimc.png') }}">
-                                                            <p class=" rounded fw-bold mt-2">Verify NIN Phone
-                                                                Number</p>
-                                                        </a>
-                                                    </div>
+                                                     <div class="col-6 col-md-3 text-center  mt-2">
+                                                         <a href="{{ route('bvn.verification.index') }}"> <img class="img-fluid  rounded"
+                                                                 width="40%" src="{{ asset('assets/images/BVN.jpeg') }}">
+                                                             <p class=" rounded fw-bold mt-2 ">BVN Verification</p>
+                                                         </a>
+                                                     </div>
 
 
-                                                    <div class="col-6 col-md-3 text-center  mt-2">
-                                                        <a href="{{ route('nin-track') }}"> <img class="img-fluid  rounded"
-                                                                width="40%" src="{{ asset('assets/images/nimc.png') }}">
-                                                            <p class=" rounded fw-bold mt-2">Verify NIN Tracking
-                                                                Number</p>
-                                                        </a>
-                                                    </div>
-                                                    <div class="col-6 col-md-3 text-center  mt-2">
-                                                        <a href="{{ route('nin-demo') }}"> <img class="img-fluid  rounded"
-                                                                width="40%" src="{{ asset('assets/images/nimc.png') }}">
-                                                            <p class=" rounded fw-bold mt-2">Verify NIN Demographic</p>
-                                                        </a>
-                                                    </div>
+                                                     <!-- <div class="col-6 col-md-3 text-center  mt-2">
+                               <a href="{{ route('bank') }}"> <img class="img-fluid  rounded" width="32%" src="{{ asset('assets/images/identity.png') }}">
+                                 <p class=" rounded fw-bold mt-2">Verify Bank Account</p>
+                               </a>
+                             </div>-->
+
+                                                     <div class="col-6 col-md-3 text-center  mt-2">
+                                                         <a href="{{ route('nin.verification.index') }}"> <img class="img-fluid  rounded"
+                                                                 width="40%" src="{{ asset('assets/images/nimc.png') }}">
+                                                             <p class=" rounded fw-bold mt-2">Verify NIN </p>
+                                                         </a>
+                                                     </div>
+
+                                                     <div class="col-6 col-md-3 text-center  mt-2">
+                                                         <a href="{{ route('nin.phone.index') }}"> <img class="img-fluid  rounded"
+                                                                 width="40%" src="{{ asset('assets/images/nimc.png') }}">
+                                                             <p class=" rounded fw-bold mt-2">Verify NIN Phone
+                                                                 Number</p>
+                                                         </a>
+                                                     </div>
+
+                                                     <div class="col-6 col-md-3 text-center  mt-2">
+                                                         <a href="{{ route('nin.demo.index') }}"> <img class="img-fluid  rounded"
+                                                                 width="40%" src="{{ asset('assets/images/nimc.png') }}">
+                                                             <p class=" rounded fw-bold mt-2">Verify NIN Demographic</p>
+                                                         </a>
+                                                     </div>
+
+                                                     <div class="col-6 col-md-3 text-center  mt-2">
+                                                         <a href="{{ route('nin-validation.index') }}"> <img class="img-fluid  rounded"
+                                                                 width="40%" src="{{ asset('assets/images/nimc.png') }}">
+                                                             <p class=" rounded fw-bold mt-2">NIN Validation</p>
+                                                         </a>
+                                                     </div>
                                                 @elseif ($type == 'agency')
-                                                    <p class="text-danger">To access our agency services, please
-                                                        upgrade your account. Simply navigate to the dashboard page and
-                                                        submit an upgrade request. Our team will assist you with the
-                                                        next steps. Thank you for choosing our services!</p>
                                                     <div class="col-6 col-md-3 text-center  mt-2">
                                                         <a href="{{ route('bvn-modification') }}"> <img
                                                                 class="img-fluid  rounded" width="60%"
@@ -129,46 +112,48 @@
                                                     </div>
 
                                                     <div class="col-6 col-md-3 text-center  mt-2">
-                                                        <a href="{{ route('account-upgrade') }}"> <img
-                                                                class="img-fluid rounded" width="50%"
-                                                                src="{{ asset('assets/images/bank.jpg') }}">
-                                                            <p class="fw-bold mt-2">Account Upgrade</p>
-                                                        </a>
-                                                    </div>
-
-                                                    <div class="col-6 col-md-3 text-center  mt-2">
-                                                        <a href="{{ route('crm2') }}"> <img class="img-fluid rounded"
+                                                        <a href="{{ route('phone.search.index') }}"> <img class="img-fluid rounded"
                                                                 width="60%" src="{{ asset('assets/images/bvn.jpg') }}">
-                                                            <p class=" fw-bold mt-2">Find BVN Using Phone and DOB</p>
+                                                            <p class=" fw-bold mt-2">BVN Search by Phone</p>
                                                         </a>
                                                     </div>
 
-                                                    <div class="col-6 col-md-3 text-center  mt-2">
-                                                        <a href="{{ route('bvn-enrollment') }}"> <img
-                                                                class="img-fluid rounded" width="60%"
-                                                                src="{{ asset('assets/images/bvn.jpg') }}">
-                                                            <p class="fw-bold mt-2">BVN Enrollement
-                                                            </p>
-                                                        </a>
-                                                    </div>
 
                                                     <div class="col-6 col-md-3 text-center  mt-2">
-                                                        <a href="{{ route('nin-services') }}"> <img
-                                                                class="img-fluid rounded" width="40%"
-                                                                src="{{ asset('assets/images/nimc.png') }}">
-                                                            <p class="fw-bold mt-1">NIN Service
-                                                            </p>
-                                                        </a>
-                                                    </div>
+                                                         <a href="{{ route('nin-modification') }}"> <img
+                                                                 class="img-fluid rounded" width="40%"
+                                                                 src="{{ asset('assets/images/nimc.png') }}">
+                                                             <p class="fw-bold mt-1">NIN Modification
+                                                             </p>
+                                                         </a>
+                                                     </div>
 
-                                                    <div class="col-6 col-md-3 text-center  mt-2">
-                                                        <a href="{{ route('vnin-to-nibss') }}"> <img
-                                                                class="img-fluid rounded" width="40%"
-                                                                src="{{ asset('assets/images/nimc.png') }}">
-                                                            <p class="fw-bold mt-1">VNIN to NIBSS
-                                                            </p>
-                                                        </a>
-                                                    </div>
+                                                      
+                                                          
+                                                                  
+                                                                  
+                                                              
+                                                              
+                                                          
+                                                      
+
+                                                      <div class="col-6 col-md-3 text-center  mt-2">
+                                                          <a href="{{ route('nin-validation.index') }}"> <img
+                                                                  class="img-fluid rounded" width="40%"
+                                                                  src="{{ asset('assets/images/nimc.png') }}">
+                                                              <p class="fw-bold mt-1">NIN Validation
+                                                              </p>
+                                                          </a>
+                                                      </div>
+
+                                                      <div class="col-6 col-md-3 text-center  mt-2">
+                                                          <a href="{{ route('ipe.index') }}"> <img
+                                                                  class="img-fluid rounded" width="40%"
+                                                                  src="{{ asset('assets/images/nimc.png') }}">
+                                                              <p class="fw-bold mt-1">IPE Clearance
+                                                              </p>
+                                                          </a>
+                                                      </div>
                                                 @elseif ($type == 'funding')
                                                     <div class="col-6 col-md-3 text-center  mt-2">
                                                         <a href="{{ route('funding') }}"><img

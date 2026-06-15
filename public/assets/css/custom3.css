@@ -190,3 +190,70 @@
         transform: translateX(-100%);
     }
 }
+
+/* SweetAlert2 Toast Stylesheet Fixes for template overrides */
+body.swal2-toast-shown .swal2-container .swal2-popup.swal2-toast {
+    display: grid !important;
+    grid-template-columns: min-content auto min-content !important;
+    align-items: center !important;
+    padding: 0.75rem 1rem !important;
+    background-color: var(--custom-white) !important;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
+}
+
+body.swal2-toast-shown .swal2-container .swal2-popup.swal2-toast .swal2-icon {
+    grid-column: 1 !important;
+    grid-row: 1/99 !important;
+    width: 2em !important;
+    min-width: 2em !important;
+    height: 2em !important;
+    margin: 0 0.75rem 0 0 !important;
+    border: 0.15em solid rgba(0,0,0,0) !important;
+}
+
+body.swal2-toast-shown .swal2-container .swal2-popup.swal2-toast .swal2-icon.swal2-success {
+    border-color: #a5dc86 !important;
+}
+
+body.swal2-toast-shown .swal2-container .swal2-popup.swal2-toast .swal2-icon.swal2-success [class^=swal2-success-line][class$=long] {
+    top: 0.9em !important;
+    right: 0.1875em !important;
+    width: 1.375em !important;
+}
+
+body.swal2-toast-shown .swal2-container .swal2-popup.swal2-toast .swal2-icon.swal2-success [class^=swal2-success-line][class$=tip] {
+    top: 1.05em !important;
+    left: 0.1875em !important;
+    width: 0.75em !important;
+}
+
+body.swal2-toast-shown .swal2-container .swal2-popup.swal2-toast .swal2-icon.swal2-error {
+    border-color: #f27474 !important;
+}
+
+body.swal2-toast-shown .swal2-container .swal2-popup.swal2-toast .swal2-icon.swal2-error [class^=swal2-x-mark-line] {
+    top: 0.85em !important;
+    width: 1.25em !important;
+    height: 0.2em !important;
+}
+
+body.swal2-toast-shown .swal2-container .swal2-popup.swal2-toast .swal2-title {
+    grid-column: 2 !important;
+    font-size: 0.95rem !important;
+    padding: 0 !important;
+    margin: 0 0 0.25rem 0 !important;
+    text-align: left !important;
+    font-weight: 600 !important;
+    background: transparent !important;
+    color: var(--default-text-color) !important;
+}
+
+body.swal2-toast-shown .swal2-container .swal2-popup.swal2-toast .swal2-html-container {
+    grid-column: 2 !important;
+    font-size: 0.825rem !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    text-align: left !important;
+    color: var(--text-muted) !important;
+}
+

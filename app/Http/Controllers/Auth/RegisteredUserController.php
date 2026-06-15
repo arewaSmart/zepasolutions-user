@@ -56,14 +56,13 @@ class RegisteredUserController extends Controller
         try {
 
             DB::beginTransaction();
-
             $user = User::create([
                 'email' => $request->email,
                 'password' => Hash::make($request->password),
                 'referral_code' => $referralDetails['myOwnCode'],
                 'refferral_id' => $referralDetails['referral_id'],
+                'password_updated_at' => now(),
             ]);
-
             DB::commit();
 
             if ($referralDetails['referral_id']) {

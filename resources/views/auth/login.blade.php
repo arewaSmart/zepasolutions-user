@@ -1,18 +1,12 @@
 @extends('layouts.auth')
 @section('title', 'Login')
 @section('content')
-    <div class="container">
-        <div class="row justify-content-center align-items-center authentication authentication-basic h-100">
-            <div class="col-xxl-4 col-xl-5 col-lg-5 col-md-6 col-sm-8 col-12">
-
-                <div class="card custom-card">
+    <div class="card custom-card">
                     <div class="card-body p-5">
-                        <div class="my-2 d-flex justify-content-center">
+                        <div class="my-2 d-flex justify-content-center d-lg-none">
                             <a href="../">
                                 <img src="{{ asset('assets/images/brand-logos/logo.png') }}" alt="logo"
                                     class="desktop-logo" style="width:60px; height:55px">
-                                <img src="{{ asset('assets/images/brand-logos/logo-dark.jpg') }}" alt="logo"
-                                    class="desktop-dark" style="width:60px; height:55px">
                             </a>
                         </div>
                         <p class="h5 fw-semibold mb-2 text-center">Sign In</p>
@@ -92,12 +86,8 @@
                         <div class="text-center">
                             <p class="fs-12 text-muted mt-3">Dont have an account? <a href="{{ route('register') }}"
                                     class="text-primary">Sign Up</a></p>
-                        </div>
-                    </div>
                 </div>
             </div>
-        </div>
-    </div>
 @endsection
 @push('page-js')
     <script src="{{ asset('assets/js/auth.js') }}"></script>

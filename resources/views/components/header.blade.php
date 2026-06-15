@@ -19,7 +19,7 @@
                      <!-- End::header-link|dropdown-toggle -->
                      <ul class="main-header-dropdown dropdown-menu pt-0 overflow-hidden header-profile-dropdown dropdown-menu-end" aria-labelledby="mainHeaderProfile">
                          <li><a class="dropdown-item d-flex" href="{{route('profile.edit')}}"><i class="ti ti-settings fs-18 me-2 op-7"></i>Settings</a></li>
-                            <li><a class="dropdown-item d-flex" href="{{route('support')}}" target="_blank"><i class="ti ti-headset fs-18 me-2 op-7"></i>Support</a></li>
+
                         <li><a id="logout" onclick="logout();" class="dropdown-item d-flex" href="#"><i class="ti ti-logout fs-18 me-2 op-7"></i>Log Out</a>
                            <input type="hidden" name="_token" id="_token" value="{{ csrf_token() }}">
                         </li>

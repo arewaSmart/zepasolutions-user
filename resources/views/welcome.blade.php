@@ -394,10 +394,10 @@
           contact info :
         </h2>
         <div class="info d-flex my-4 " data-aos="fade-right" data-aos-delay="250">
-          <h5><i class="bi bi-envelope-fill mx-4"></i>user.guide@zepasolutions.com</h5>
+          <h5><i class="bi bi-envelope-fill mx-4"></i>support@zepasolutions.com</h5>
         </div>
         <div class="info d-flex my-4 " data-aos="fade-up" data-aos-delay="300">
-          <h5><i class="bi bi-phone-fill mx-4"></i>+2347011604559</h5>
+          <h5><i class="bi bi-phone-fill mx-4"></i>+2348012345678</h5>
         </div>
         <div class="info d-flex my-4" data-aos="fade-up" data-aos-delay="400">
         <h5>
@@ -405,8 +405,8 @@
       <i class="bi bi-facebook mx-4"></i>@zepa wallet</a>
     </div>
         <div class="info d-flex my-4" data-aos="fade-up" data-aos-delay="400"><h5>
-        <a href="https://wa.me/+2347011604559" target="_blank">
-      <i class="bi bi-whatsapp mx-4"></i>+2347011604559
+        <a href="https://wa.me/+2348012345678" target="_blank">
+      <i class="bi bi-whatsapp mx-4"></i>+2348012345678
     </a>
       </div>
       </div>

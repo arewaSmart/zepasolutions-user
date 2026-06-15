@@ -14,13 +14,6 @@ use Illuminate\Support\Facades\Route;
 
 Route::middleware('guest')->group(function () {
 
-    Route::get('/clear-cache', function () {
-        $exitCode = Artisan::call('cache:clear');
-        $exitCode = Artisan::call('optimize');
-        // return what you want
-        echo $exitCode;
-    });
-
     Route::get('register', [RegisteredUserController::class, 'create'])
         ->name('register');
 

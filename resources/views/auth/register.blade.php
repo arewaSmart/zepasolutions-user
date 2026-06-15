@@ -3,11 +3,7 @@
 @section('title', 'Sign Up')
 
 @section('content')
-
-    <div class="container-lg">
-        <div class="row justify-content-center align-items-center authentication authentication-basic h-100">
-            <div class="col-xxl-4 col-xl-5 col-lg-5 col-md-6 col-sm-8 col-12 mt-3">
-                <div class="card custom-card">
+    <div class="card custom-card">
                     <div class="card-body p-4">
 
                         @if (session()->has('status'))
@@ -76,7 +72,7 @@
                                         data-bs-custom-class="tooltip-secondary" class="me-3"><i
                                             class="ri-information-line"></i></a>
                                     <input type="text" class="form-control form-control-lg" id="referral_code"
-                                        name="referral_code" maxlength="6" placeholder="Idris19209" tabindex="2" />
+                                        name="referral_code" value="{{ request()->get('ref') }}" maxlength="6" placeholder="Idris19209" tabindex="2" />
                                     <div class="form-check mt-3">
                                         <input class="form-check-input" type="checkbox" value="" id="terms"
                                             name="terms" tabindex="5">
@@ -102,12 +98,8 @@
                         <div class="text-center">
                             <p class="fs-12 text-muted mt-3">Already have an account? <a href="{{ route('login') }}"
                                     class="text-primary">Sign In</a></p>
-                        </div>
-                    </div>
                 </div>
             </div>
-        </div>
-    </div>
 @endsection
 @push('page-js')
     <script src="{{ asset('assets/js/register.js') }}"></script>

@@ -15,9 +15,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->validateCsrfTokens(except: [
             '/verification/upload',
             '/palmpay/webhook',
-            '/funding-request',
-            '/read',
-
+            '/nin-validation/webhook',
         ]);
 
         $middleware->alias([

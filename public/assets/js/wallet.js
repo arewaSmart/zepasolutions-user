@@ -31,32 +31,10 @@ $(document).ready(function () {
     function error_message(msg) {
         if (msg) reciever.textContent = msg;
         else reciever.textContent = "Cannot Verify Reciever";
-        reciever.classList.remove("bg-info", "border-info");
-        reciever.classList.add(
-            "bg-danger",
-            "border-danger",
-            "p-3",
-            "bg-opacity-10",
-            "border",
-            "rounded",
-            "rounded-top-0",
-            "border-top-0",
-            "mt-0"
-        );
+        reciever.className = "alert alert-danger py-2 px-3 mt-2 text-center fs-12 border-0 d-block";
     }
     function success_message(response) {
-        reciever.textContent = "Reciever: " + response;
-        reciever.classList.add(
-            "bg-info",
-            "border-info",
-            "p-3",
-            "bg-opacity-10",
-            "border",
-            "rounded",
-            "rounded-top-0",
-            "border-top-0",
-            "mt-0"
-        );
-        reciever.classList.remove("bg-danger", "border-danger");
+        reciever.textContent = "Receiver: " + response;
+        reciever.className = "alert alert-success py-2 px-3 mt-2 text-center fs-12 border-0 d-block";
     }
 });

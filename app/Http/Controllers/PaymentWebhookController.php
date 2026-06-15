@@ -18,30 +18,7 @@ use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 
 class PaymentWebhookController extends Controller
 {
-    public function handlePayout($payload)
-    {
 
-        if (! $this->verifySignature($payload)) {
-            return response()->json(['error' => 'Invalid signature'], 401);
-        }
-
-        $orderId = $payload['orderId'];
-
-        // Use a database transaction to prevent race conditions
-        DB::transaction(function () use ($orderId) {
-            // Find the specific transaction by referenceId and lock it for update
-            $transaction = Transaction::where('referenceId', $orderId)
-                ->where('status', 'Pending')
-                ->lockForUpdate()
-                ->first();
-
-            if ($transaction) {
-                $this->processPayoutTransaction($transaction);
-            } else {
-                Log::info('[PAYOUT]: Transaction already processed or not found for Order ID: '.$orderId);
-            }
-        });
-    }
 
     public function handleWebhook(Request $request)
     {
@@ -55,7 +32,15 @@ class PaymentWebhookController extends Controller
 
         // Process the webhook payload
 
-        Log::info('Palmpay webhook received Data:', $payload);
+        // Sanitize sensitive fields before logging
+        $sanitizedPayload = $payload;
+        foreach (['sign', 'signature', 'pin', 'password', 'token', 'key'] as $key) {
+            if (isset($sanitizedPayload[$key])) {
+                $sanitizedPayload[$key] = '********';
+            }
+        }
+
+        Log::info('Palmpay webhook received Data:', $sanitizedPayload);
 
         $this->processReservedAccountTransaction($payload);
 
@@ -78,29 +63,26 @@ class PaymentWebhookController extends Controller
 
     private function processReservedAccountTransaction($payload)
     {
+        Log::info('[PAYIN]:', $payload);
 
-        if (isset($payload['orderId']) && isset($payload['transType']) && $payload['transType'] == 41) {
+        $virtualAccountNo = $payload['virtualAccountNo'];
+        $orderNo = $payload['orderNo'];
+        $amountPaid = $payload['orderAmount'] / 100;
+        $payerBankName = $payload['payerBankName'];
+        $payerAccountName = $payload['payerAccountName'];
+        $service_description = 'Your wallet has been credited with ₦'.number_format($amountPaid, 2);
+        $orderStatus = $payload['orderStatus'] ?? null;
 
-            Log::info('[PAYOUT]:', $payload);
+        // Only process and credit if order status is successful (status 1)
+        if ($orderStatus != 1) {
+            Log::warning("[PAYIN]: Webhook received for non-successful order status ({$orderStatus}). Skipping crediting for Order No: ".$orderNo);
+            return;
+        }
 
-            $this->handlePayout($payload);
-        } else {
+        $response = VirtualAccount::select('user_id')->where('accountNo', $virtualAccountNo)->first();
 
-            Log::info('[PAYIN]:', $payload);
-
-            $virtualAccountNo = $payload['virtualAccountNo'];
-            $orderNo = $payload['orderNo'];
-            $amountPaid = $payload['orderAmount'] / 100;
-            $payerBankName = $payload['payerBankName'];
-            $payerAccountName = $payload['payerAccountName'];
-            $service_description = 'Your wallet has been credited with ₦'.number_format($amountPaid, 2);
-            $orderStatus = $payload['orderStatus'];
-
-            $response = VirtualAccount::select('user_id')->where('accountNo', $virtualAccountNo)->first();
-
-            if ($response) {
-                $this->createTransactionForReservedAccount($response->user_id, $orderNo, $amountPaid, $payerBankName, $payerAccountName, $service_description, $orderStatus);
-            }
+        if ($response) {
+            $this->createTransactionForReservedAccount($response->user_id, $orderNo, $amountPaid, $payerBankName, $payerAccountName, $service_description, $orderStatus);
         }
     }
 
@@ -142,26 +124,49 @@ class PaymentWebhookController extends Controller
     {
         $shouldNotify = false;
 
-        // Use a database transaction to ensure idempotency
-        DB::transaction(function () use ($userId, $orderNo, $amountPaid, $payerBankName, $payerAccountName, $service_description, $orderStatus, &$shouldNotify) {
-            // Check if Transaction Existed in db with lock
-            $transaction = Transaction::where('referenceId', $orderNo)->lockForUpdate()->first();
+        try {
+            // Use a database transaction to ensure idempotency
+            DB::transaction(function () use ($userId, $orderNo, $amountPaid, $payerBankName, $payerAccountName, $service_description, $orderStatus, &$shouldNotify) {
+                // Check if Transaction Existed in db with lock
+                $transaction = Transaction::where('referenceId', $orderNo)->lockForUpdate()->first();
 
-            if ($transaction) {
-                // If it already exists, we only update if it's not already approved/finalized
-                if ($transaction->status !== 'Approved') {
-                    $this->updateTransaction($orderNo, $amountPaid, $payerBankName, $payerAccountName, $service_description, $orderStatus);
-                    Log::info('[PAYIN]: Updated existing transaction for Order No: '.$orderNo);
+                if ($transaction) {
+                    // If it already exists, we only update if it's not already approved/finalized
+                    if ($transaction->status !== 'Approved') {
+                        $this->updateTransaction($orderNo, $amountPaid, $payerBankName, $payerAccountName, $service_description, $orderStatus);
+                        Log::info('[PAYIN]: Updated existing transaction for Order No: '.$orderNo);
+                    } else {
+                        Log::info('[PAYIN]: Duplicate webhook received. Transaction already processed for Order No: '.$orderNo);
+                    }
                 } else {
-                    Log::info('[PAYIN]: Duplicate webhook received. Transaction already processed for Order No: '.$orderNo);
+                    // Prevent duplicate credits of the same amount for the same user within 5 minutes
+                    $recentTransaction = Transaction::where('user_id', $userId)
+                        ->where('amount', $amountPaid)
+                        ->where('service_type', 'Wallet Topup')
+                        ->where('status', 'Approved')
+                        ->where('created_at', '>=', Carbon::now()->subMinutes(5))
+                        ->lockForUpdate()
+                        ->first();
+
+                    if ($recentTransaction) {
+                        Log::warning("[PAYIN]: Potential duplicate deposit detected. User {$userId} already credited with ₦{$amountPaid} within the last 5 minutes (Recent Ref: {$recentTransaction->referenceId}). Blocking current Ref: {$orderNo}");
+                        return;
+                    }
+
+                    $this->insertTransaction($userId, $orderNo, $amountPaid, $payerAccountName, $payerBankName, $service_description);
+                    $this->updateWalletBalance($userId, $amountPaid);
+                    $shouldNotify = true;
+                    Log::info('[PAYIN]: New transaction created and wallet updated for Order No: '.$orderNo);
                 }
+            });
+        } catch (\Illuminate\Database\QueryException $e) {
+            // Handle race-condition duplicate key violations at database level
+            if ($e->getCode() === '23000' || str_contains($e->getMessage(), 'Duplicate entry')) {
+                Log::info('[PAYIN]: QueryException caught. Duplicate webhook transaction reference prevented: '.$orderNo);
             } else {
-                $this->insertTransaction($userId, $orderNo, $amountPaid, $payerAccountName, $payerBankName, $service_description);
-                $this->updateWalletBalance($userId, $amountPaid);
-                $shouldNotify = true;
-                Log::info('[PAYIN]: New transaction created and wallet updated for Order No: '.$orderNo);
+                throw $e;
             }
-        });
+        }
 
         // Send notification and email outside the transaction to reduce lock time
         if ($shouldNotify) {
@@ -183,27 +188,7 @@ class PaymentWebhookController extends Controller
         }
     }
 
-    private function processPayoutTransaction($transaction)
-    {
-        $userId = $transaction->user_id;
-        $amountPaid = $transaction->amount;
 
-        // Fetch wallet with lock
-        $wallet = Wallet::where('user_id', $userId)->lockForUpdate()->first();
-
-        if ($wallet) {
-            // Deduct from balance
-            $wallet->decrement('balance', $amountPaid);
-            Log::info("Wallet balance deducted for payout: User {$userId}, Amount {$amountPaid}");
-        } else {
-            Log::warning('Wallet not found for user ID: '.$userId);
-            return; 
-        }
-
-        // Update the specific transaction status
-        $transaction->update(['status' => 'Approved']);
-        Log::info("Transaction {$transaction->referenceId} marked as Approved");
-    }
 
     private function sendNotificationAndEmail($userId, $amountPaid, $orderNo, $bankName, $type)
     {
