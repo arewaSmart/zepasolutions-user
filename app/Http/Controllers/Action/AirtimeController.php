@@ -101,7 +101,7 @@ class AirtimeController extends Controller
         if ($serviceField) {
             $userType = $user->user_type ?? 'personal'; 
             
-            $servicePrice = \App\Models\ServicePrice::where('service_field_id', $serviceField->id)
+            $servicePrice = \App\Models\ServicePrice::where('service_fields_id', $serviceField->id)
                 ->where('user_type', $userType)
                 ->first();
 
