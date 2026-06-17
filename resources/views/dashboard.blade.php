@@ -74,7 +74,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="col-6 col-md-4 mb-3 mb-md-0">
+                                    <div class="col-12 col-md-4 mb-3 mb-md-0">
                                         <div class="card custom-card overflow-hidden">
                                             <div class="card-body">
                                                 <div class="d-flex align-items-top justify-content-between">
@@ -100,7 +100,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="col-6 col-md-4 mb-3 mb-md-0">
+                                    <div class="col-12 col-md-4 mb-3 mb-md-0">
                                         <div class="card custom-card overflow-hidden">
                                             <div class="card-body">
                                                 <div class="d-flex align-items-top justify-content-between">
